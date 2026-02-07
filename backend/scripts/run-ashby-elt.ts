@@ -6,13 +6,16 @@
 
 import { runAshbyELTPipeline } from "../src/jobs/ashby-elt";
 
-const COMPANY_ID = process.argv[2];
-const JOB_BOARD_NAME = process.argv[3];
+const COMPANY_SLUG = process.argv[2];
 
 async function main() {
-  console.log(`Running Ashby ELT for company: ${COMPANY_ID} and job board: ${JOB_BOARD_NAME}\n`);
-  const result = await runAshbyELTPipeline(COMPANY_ID, JOB_BOARD_NAME!);
-  console.log("Result:", result);
+  try {
+    const result = await runAshbyELTPipeline(COMPANY_SLUG);
+    console.log("Result:", result);
+  } catch (error) {
+    console.error("Error:", error);
+    process.exit(1);
+  }
 }
 
 main().catch(console.error);

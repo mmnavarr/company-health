@@ -7,25 +7,16 @@ import { createHash } from "node:crypto";
 import type { AshbyJob } from "../scraping/ashby-scraper";
 import type { JobSource, RawNewsData } from "../types";
 import { prisma } from "../lib/prisma";
-import { initS3Client, uploadJson } from "../lib/storage";
+import { uploadJson } from "../lib/storage";
 import { normalizeJob } from "./index";
-import { S3Client } from "bun";
+import { Logger, ILogObj } from "tslog";
 
 export class DataProcessor {
-  private static readonly JOB_POSTINGS_BUCKET = "job_postings";
-  private static readonly NEWS_ARTICLES_BUCKET = "news_articles";
-  
-  private s3JobPostings: S3Client;
-  private s3NewsArticles: S3Client;
-
-  constructor() {
-    this.s3JobPostings = initS3Client(DataProcessor.JOB_POSTINGS_BUCKET);
-    this.s3NewsArticles = initS3Client(DataProcessor.NEWS_ARTICLES_BUCKET);
-  }
+  private readonly log: Logger<ILogObj> = new Logger();
 
   /**
-   * Store raw job data to Supabase Object Storage. Dispatches to type-specific store logic.
-   * @returns S3 key where the raw data was stored
+   * Store raw job data to Vercel Blob. Dispatches to type-specific store logic.
+   * @returns Blob URL where the raw data was stored
    */
   async store<T>(type: JobSource, data: T): Promise<string> {
     switch (type) {
@@ -41,14 +32,14 @@ export class DataProcessor {
     }
   }
 
-  /** Store multiple raw jobs to Object Storage. Returns S3 keys in same order as input. */
+  /** Store multiple raw jobs to Vercel Blob. Returns blob URLs in same order as input. */
   async storeBatch<T>(type: JobSource, items: T[]): Promise<string[]> {
-    const s3Keys: string[] = [];
+    const urls: string[] = [];
     for (const item of items) {
-      const key = await this.store(type, item);
-      s3Keys.push(key);
+      const url = await this.store(type, item);
+      urls.push(url);
     }
-    return s3Keys;
+    return urls;
   }
 
   /**
@@ -65,18 +56,29 @@ export class DataProcessor {
     let jobsNew = 0;
     let jobsUpdated = 0;
 
-    // Ensure company exists (companyId is the stable unique key)
-    await prisma.company.upsert({
-      where: { id: companyId },
-      update: { updatedAt: now },
-      create: {
-        id: companyId,
-        name: jobBoardName,
-        ashbyUrl: `https://jobs.ashbyhq.com/${jobBoardName}`,
+    if (jobs.length === 0) {
+      return { jobsNew, jobsUpdated, jobsRemoved: 0 };
+    }
+
+    const externalIds = jobs.map((job) => job.id);
+    const existingRows = await prisma.jobPosting.findMany({
+      where: {
+        companyId,
+        source: "ashby",
+        externalId: { in: externalIds },
       },
+      select: { id: true, externalId: true, descriptionHash: true },
     });
+    this.log.debug(`Found ${existingRows.length} existing jobs for company ${companyId}`);
+    const existingByExternalId = new Map(
+      existingRows.map((row) => [row.externalId, row])
+    );
 
     const seenExternalIds = new Set<string>();
+
+    // Prepare all job data before touching the DB
+    const updateOps: Array<{ existingId: string; data: Record<string, any>; changed: boolean }> = [];
+    const createOps: Array<any> = [];
 
     for (const job of jobs) {
       seenExternalIds.add(job.id);
@@ -106,37 +108,43 @@ export class DataProcessor {
         lastSeenAt: now,
       };
 
-      const existing = await prisma.jobPosting.findUnique({
-        where: {
-          companyId_source_externalId: {
-            companyId,
-            source: "ashby",
-            externalId: job.id,
-          },
-        },
-      });
+      const existing = existingByExternalId.get(job.id);
 
       if (existing) {
         const changed = existing.descriptionHash !== descriptionHash;
-        await prisma.jobPosting.update({
-          where: { id: existing.id },
+        updateOps.push({
+          existingId: existing.id,
           data: { ...jobData, removedAt: null },
+          changed,
         });
         if (changed) jobsUpdated++;
       } else {
-        await prisma.jobPosting.create({
-          data: {
-            companyId,
-            externalId: job.id,
-            source: "ashby",
-            sourceUrl,
-            ...jobData,
-            firstSeenAt: now,
-          },
+        createOps.push({
+          companyId,
+          externalId: job.id,
+          source: "ashby",
+          sourceUrl,
+          ...jobData,
+          firstSeenAt: now,
         });
-        jobsNew++;
       }
     }
+
+    // Execute all writes in a single interactive transaction
+    await prisma.$transaction(async (tx) => {
+      for (const op of updateOps) {
+        await tx.jobPosting.update({
+          where: { id: op.existingId },
+          data: op.data,
+        });
+      }
+
+      if (createOps.length > 0) {
+        await tx.jobPosting.createMany({ data: createOps });
+      }
+    });
+
+    jobsNew = createOps.length;
 
     // Mark jobs not seen in this scrape as removed
     const removedResult = await prisma.jobPosting.updateMany({
@@ -153,13 +161,13 @@ export class DataProcessor {
   }
 
   /**
-   * Store raw news data to Supabase Object Storage.
-   * @returns S3 key where the raw data was stored
+   * Store raw news data to Vercel Blob.
+   * @returns Blob URL where the raw data was stored
    */
   async storeNewsRaw(articles: RawNewsData[]): Promise<string> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const key = `tavily/batch-${timestamp}.json`;
-    return uploadJson(this.s3NewsArticles, key, articles);
+    const pathname = `tavily/batch-${timestamp}.json`;
+    return uploadJson(pathname, articles);
   }
 
   /**
@@ -230,8 +238,8 @@ export class DataProcessor {
   private async storeAshbyRaw(job: AshbyJob): Promise<string> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const slug = slugify(job.title);
-    const key = `ashby/${slug}-${timestamp}.json`;
-    return uploadJson(this.s3JobPostings, key, job);
+    const pathname = `ashby/${slug}-${timestamp}.json`;
+    return uploadJson(pathname, job);
   }
 
   private async storeLinkedInRaw(data: unknown): Promise<string> {

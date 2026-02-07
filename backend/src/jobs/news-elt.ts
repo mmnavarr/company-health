@@ -6,7 +6,7 @@
  */
 
 import { randomUUID } from "node:crypto";
-import { TavilyNewsScraper } from "../scraping/tavily-news-scraper";
+import { TavilyNewsResponse, TavilyNewsScraper } from "../scraping/tavily-news-scraper";
 import { DataProcessor } from "../data";
 import { prisma } from "../lib/prisma";
 import type { RawNewsData } from "../types";
@@ -25,10 +25,12 @@ export interface NewsELTPipelineResult {
  * @param companyDomain - Company domain for the companies table
  */
 export async function runNewsELTPipeline(
-  companyName: string,
-  companyId: string = randomUUID(),
-  companyDomain: string
+  companySlug: string,
 ): Promise<NewsELTPipelineResult> {
+  if (!companySlug) {
+    throw new Error("Company slug is required");
+  }
+
   const pipelineResult: NewsELTPipelineResult = {
     articlesFound: 0,
     articlesNew: 0,
@@ -36,9 +38,17 @@ export async function runNewsELTPipeline(
     rawPath: null,
   };
 
+  // --- Layer 0: Validate company exists ---
+  const company = await prisma.company.findUnique({
+    where: { slug: companySlug },
+  });
+  if (!company) {
+    throw new Error(`Company ${companySlug} not found`);
+  }
+
   // --- Layer 1: Extract (Scraping) ---
   const scraper = new TavilyNewsScraper();
-  const response = await scraper.scrape(companyName);
+  const response = await scraper.scrape<TavilyNewsResponse>(company.name);
   const results = response.results;
   pipelineResult.articlesFound = results.length;
 
@@ -60,14 +70,15 @@ export async function runNewsELTPipeline(
   pipelineResult.rawPath = await dataProcessor.storeNewsRaw(articles);
 
   // --- Layer 3: Transform & persist to DB ---
-  const dbResult = await dataProcessor.upsertNewsArticles(companyId, articles);
+  const dbResult = await dataProcessor.upsertNewsArticles(company.id, articles);
   pipelineResult.articlesNew = dbResult.articlesNew;
   pipelineResult.articlesUpdated = dbResult.articlesUpdated;
 
   // Record scraping run
   await prisma.scrapingRun.create({
     data: {
-      companyId,
+      companyId: company.id,
+      companySlug: company.slug,
       source: "news",
       status: "completed",
       jobsFound: pipelineResult.articlesFound,

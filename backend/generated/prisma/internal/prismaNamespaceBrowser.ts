@@ -77,8 +77,9 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const CompanyScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  slug: 'slug',
   linkedinUrl: 'linkedinUrl',
-  ashbyUrl: 'ashbyUrl',
+  ashbyBoardName: 'ashbyBoardName',
   careersPageUrl: 'careersPageUrl',
   industry: 'industry',
   companySize: 'companySize',
@@ -148,6 +149,7 @@ export type NewsArticleScalarFieldEnum = (typeof NewsArticleScalarFieldEnum)[key
 export const ScrapingRunScalarFieldEnum = {
   id: 'id',
   companyId: 'companyId',
+  companySlug: 'companySlug',
   source: 'source',
   status: 'status',
   jobsFound: 'jobsFound',

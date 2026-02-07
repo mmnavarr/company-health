@@ -43,6 +43,7 @@ export type ScrapingRunSumAggregateOutputType = {
 export type ScrapingRunMinAggregateOutputType = {
   id: string | null
   companyId: string | null
+  companySlug: string | null
   source: string | null
   status: string | null
   jobsFound: number | null
@@ -58,6 +59,7 @@ export type ScrapingRunMinAggregateOutputType = {
 export type ScrapingRunMaxAggregateOutputType = {
   id: string | null
   companyId: string | null
+  companySlug: string | null
   source: string | null
   status: string | null
   jobsFound: number | null
@@ -73,6 +75,7 @@ export type ScrapingRunMaxAggregateOutputType = {
 export type ScrapingRunCountAggregateOutputType = {
   id: number
   companyId: number
+  companySlug: number
   source: number
   status: number
   jobsFound: number
@@ -104,6 +107,7 @@ export type ScrapingRunSumAggregateInputType = {
 export type ScrapingRunMinAggregateInputType = {
   id?: true
   companyId?: true
+  companySlug?: true
   source?: true
   status?: true
   jobsFound?: true
@@ -119,6 +123,7 @@ export type ScrapingRunMinAggregateInputType = {
 export type ScrapingRunMaxAggregateInputType = {
   id?: true
   companyId?: true
+  companySlug?: true
   source?: true
   status?: true
   jobsFound?: true
@@ -134,6 +139,7 @@ export type ScrapingRunMaxAggregateInputType = {
 export type ScrapingRunCountAggregateInputType = {
   id?: true
   companyId?: true
+  companySlug?: true
   source?: true
   status?: true
   jobsFound?: true
@@ -236,6 +242,7 @@ export type ScrapingRunGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 export type ScrapingRunGroupByOutputType = {
   id: string
   companyId: string
+  companySlug: string
   source: string
   status: string
   jobsFound: number | null
@@ -274,6 +281,7 @@ export type ScrapingRunWhereInput = {
   NOT?: Prisma.ScrapingRunWhereInput | Prisma.ScrapingRunWhereInput[]
   id?: Prisma.UuidFilter<"ScrapingRun"> | string
   companyId?: Prisma.UuidFilter<"ScrapingRun"> | string
+  companySlug?: Prisma.StringFilter<"ScrapingRun"> | string
   source?: Prisma.StringFilter<"ScrapingRun"> | string
   status?: Prisma.StringFilter<"ScrapingRun"> | string
   jobsFound?: Prisma.IntNullableFilter<"ScrapingRun"> | number | null
@@ -290,6 +298,7 @@ export type ScrapingRunWhereInput = {
 export type ScrapingRunOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
+  companySlug?: Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
   jobsFound?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -309,6 +318,7 @@ export type ScrapingRunWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ScrapingRunWhereInput[]
   NOT?: Prisma.ScrapingRunWhereInput | Prisma.ScrapingRunWhereInput[]
   companyId?: Prisma.UuidFilter<"ScrapingRun"> | string
+  companySlug?: Prisma.StringFilter<"ScrapingRun"> | string
   source?: Prisma.StringFilter<"ScrapingRun"> | string
   status?: Prisma.StringFilter<"ScrapingRun"> | string
   jobsFound?: Prisma.IntNullableFilter<"ScrapingRun"> | number | null
@@ -325,6 +335,7 @@ export type ScrapingRunWhereUniqueInput = Prisma.AtLeast<{
 export type ScrapingRunOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
+  companySlug?: Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
   jobsFound?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -348,6 +359,7 @@ export type ScrapingRunScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ScrapingRunScalarWhereWithAggregatesInput | Prisma.ScrapingRunScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"ScrapingRun"> | string
   companyId?: Prisma.UuidWithAggregatesFilter<"ScrapingRun"> | string
+  companySlug?: Prisma.StringWithAggregatesFilter<"ScrapingRun"> | string
   source?: Prisma.StringWithAggregatesFilter<"ScrapingRun"> | string
   status?: Prisma.StringWithAggregatesFilter<"ScrapingRun"> | string
   jobsFound?: Prisma.IntNullableWithAggregatesFilter<"ScrapingRun"> | number | null
@@ -362,6 +374,7 @@ export type ScrapingRunScalarWhereWithAggregatesInput = {
 
 export type ScrapingRunCreateInput = {
   id?: string
+  companySlug: string
   source: string
   status: string
   jobsFound?: number | null
@@ -378,6 +391,7 @@ export type ScrapingRunCreateInput = {
 export type ScrapingRunUncheckedCreateInput = {
   id?: string
   companyId: string
+  companySlug: string
   source: string
   status: string
   jobsFound?: number | null
@@ -392,6 +406,7 @@ export type ScrapingRunUncheckedCreateInput = {
 
 export type ScrapingRunUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  companySlug?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   jobsFound?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -408,6 +423,7 @@ export type ScrapingRunUpdateInput = {
 export type ScrapingRunUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  companySlug?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   jobsFound?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -423,6 +439,7 @@ export type ScrapingRunUncheckedUpdateInput = {
 export type ScrapingRunCreateManyInput = {
   id?: string
   companyId: string
+  companySlug: string
   source: string
   status: string
   jobsFound?: number | null
@@ -437,6 +454,7 @@ export type ScrapingRunCreateManyInput = {
 
 export type ScrapingRunUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  companySlug?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   jobsFound?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -452,6 +470,7 @@ export type ScrapingRunUpdateManyMutationInput = {
 export type ScrapingRunUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  companySlug?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   jobsFound?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -477,6 +496,7 @@ export type ScrapingRunOrderByRelationAggregateInput = {
 export type ScrapingRunCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
+  companySlug?: Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
   jobsFound?: Prisma.SortOrder
@@ -499,6 +519,7 @@ export type ScrapingRunAvgOrderByAggregateInput = {
 export type ScrapingRunMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
+  companySlug?: Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
   jobsFound?: Prisma.SortOrder
@@ -514,6 +535,7 @@ export type ScrapingRunMaxOrderByAggregateInput = {
 export type ScrapingRunMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
+  companySlug?: Prisma.SortOrder
   source?: Prisma.SortOrder
   status?: Prisma.SortOrder
   jobsFound?: Prisma.SortOrder
@@ -585,6 +607,7 @@ export type NullableIntFieldUpdateOperationsInput = {
 
 export type ScrapingRunCreateWithoutCompanyInput = {
   id?: string
+  companySlug: string
   source: string
   status: string
   jobsFound?: number | null
@@ -599,6 +622,7 @@ export type ScrapingRunCreateWithoutCompanyInput = {
 
 export type ScrapingRunUncheckedCreateWithoutCompanyInput = {
   id?: string
+  companySlug: string
   source: string
   status: string
   jobsFound?: number | null
@@ -643,6 +667,7 @@ export type ScrapingRunScalarWhereInput = {
   NOT?: Prisma.ScrapingRunScalarWhereInput | Prisma.ScrapingRunScalarWhereInput[]
   id?: Prisma.UuidFilter<"ScrapingRun"> | string
   companyId?: Prisma.UuidFilter<"ScrapingRun"> | string
+  companySlug?: Prisma.StringFilter<"ScrapingRun"> | string
   source?: Prisma.StringFilter<"ScrapingRun"> | string
   status?: Prisma.StringFilter<"ScrapingRun"> | string
   jobsFound?: Prisma.IntNullableFilter<"ScrapingRun"> | number | null
@@ -657,6 +682,7 @@ export type ScrapingRunScalarWhereInput = {
 
 export type ScrapingRunCreateManyCompanyInput = {
   id?: string
+  companySlug: string
   source: string
   status: string
   jobsFound?: number | null
@@ -671,6 +697,7 @@ export type ScrapingRunCreateManyCompanyInput = {
 
 export type ScrapingRunUpdateWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  companySlug?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   jobsFound?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -685,6 +712,7 @@ export type ScrapingRunUpdateWithoutCompanyInput = {
 
 export type ScrapingRunUncheckedUpdateWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  companySlug?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   jobsFound?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -699,6 +727,7 @@ export type ScrapingRunUncheckedUpdateWithoutCompanyInput = {
 
 export type ScrapingRunUncheckedUpdateManyWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  companySlug?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   jobsFound?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -716,6 +745,7 @@ export type ScrapingRunUncheckedUpdateManyWithoutCompanyInput = {
 export type ScrapingRunSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   companyId?: boolean
+  companySlug?: boolean
   source?: boolean
   status?: boolean
   jobsFound?: boolean
@@ -732,6 +762,7 @@ export type ScrapingRunSelect<ExtArgs extends runtime.Types.Extensions.InternalA
 export type ScrapingRunSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   companyId?: boolean
+  companySlug?: boolean
   source?: boolean
   status?: boolean
   jobsFound?: boolean
@@ -748,6 +779,7 @@ export type ScrapingRunSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
 export type ScrapingRunSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   companyId?: boolean
+  companySlug?: boolean
   source?: boolean
   status?: boolean
   jobsFound?: boolean
@@ -764,6 +796,7 @@ export type ScrapingRunSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
 export type ScrapingRunSelectScalar = {
   id?: boolean
   companyId?: boolean
+  companySlug?: boolean
   source?: boolean
   status?: boolean
   jobsFound?: boolean
@@ -776,7 +809,7 @@ export type ScrapingRunSelectScalar = {
   createdAt?: boolean
 }
 
-export type ScrapingRunOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "source" | "status" | "jobsFound" | "jobsNew" | "jobsUpdated" | "jobsRemoved" | "errorMessage" | "startedAt" | "completedAt" | "createdAt", ExtArgs["result"]["scrapingRun"]>
+export type ScrapingRunOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "companySlug" | "source" | "status" | "jobsFound" | "jobsNew" | "jobsUpdated" | "jobsRemoved" | "errorMessage" | "startedAt" | "completedAt" | "createdAt", ExtArgs["result"]["scrapingRun"]>
 export type ScrapingRunInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }
@@ -795,6 +828,7 @@ export type $ScrapingRunPayload<ExtArgs extends runtime.Types.Extensions.Interna
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     companyId: string
+    companySlug: string
     source: string
     status: string
     jobsFound: number | null
@@ -1231,6 +1265,7 @@ export interface Prisma__ScrapingRunClient<T, Null = never, ExtArgs extends runt
 export interface ScrapingRunFieldRefs {
   readonly id: Prisma.FieldRef<"ScrapingRun", 'String'>
   readonly companyId: Prisma.FieldRef<"ScrapingRun", 'String'>
+  readonly companySlug: Prisma.FieldRef<"ScrapingRun", 'String'>
   readonly source: Prisma.FieldRef<"ScrapingRun", 'String'>
   readonly status: Prisma.FieldRef<"ScrapingRun", 'String'>
   readonly jobsFound: Prisma.FieldRef<"ScrapingRun", 'Int'>

@@ -12,7 +12,9 @@
     "prisma": "prisma",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "elt:ashby": "bun run scripts/run-ashby-elt.ts",
+    "elt:news": "bun run scripts/run-news-elt.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -23,7 +25,9 @@
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@tavily/core": "^0.7.1",
+    "@vercel/blob": "^2.2.0",
     "pg": "^8.18.0",
-    "prisma": "^7.3.0"
+    "prisma": "^7.3.0",
+    "tslog": "^4.10.2"
   }
 }

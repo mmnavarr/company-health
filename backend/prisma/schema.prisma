@@ -11,19 +11,19 @@ datasource db {
 model Company {
   id                    String   @id @default(uuid()) @db.Uuid
   name                  String   @db.VarChar(255)
-  linkedinUrl           String?  @db.VarChar(500)
-  ashbyUrl              String?  @db.VarChar(500)
-  careersPageUrl        String?  @db.VarChar(500)
+  slug                  String   @unique @db.VarChar(255)
+  linkedinUrl           String?  @map("linkedin_url") @db.VarChar(500)
+  ashbyBoardName        String?  @map("ashby_board_name") @db.VarChar(500)
+  careersPageUrl        String?  @map("careers_page_url") @db.VarChar(500)
   industry              String?  @db.VarChar(100)
-  companySize           String?  @db.VarChar(50)
-  headquartersLocation  String?  @db.VarChar(255)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  companySize           String?  @map("company_size") @db.VarChar(50)
+  headquartersLocation  String?  @map("headquarters_location") @db.VarChar(255)
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
   metadata              Json?
 
   jobPostings    JobPosting[]
   newsArticles   NewsArticle[]
-
   scrapingRuns   ScrapingRun[]
   healthMetrics  CompanyHealthMetric[]
 
@@ -33,35 +33,35 @@ model Company {
 
 /// TDD §3.1 — Job Posting (normalized from any scraper source)
 model JobPosting {
-  id                String    @id @default(uuid()) @db.Uuid
-  companyId         String    @db.Uuid
-  externalId        String?   @db.VarChar(255)
-  source            String    @db.VarChar(50) // 'linkedin' | 'ashby' | 'website'
-  sourceUrl         String    @db.VarChar(1000)
-  title             String    @db.VarChar(500)
-  description       String?   @db.Text
-  descriptionHtml   String?   @db.Text
-  location          String?   @db.VarChar(255)
-  remoteType        String?   @db.VarChar(50) // 'remote' | 'hybrid' | 'onsite'
-  isRemote          Boolean?
-  employmentType    String?   @db.VarChar(50)
-  seniorityLevel    String?   @db.VarChar(50)
-  department        String?   @db.VarChar(100)
-  team              String?   @db.VarChar(100)
-  descriptionHash   String?   @db.VarChar(64)
-  publishedAt       DateTime?
-  jobUrl            String?   @db.VarChar(1000)
-  applyUrl          String?   @db.VarChar(1000)
-  compensation      Json?
-  secondaryLocations Json?
-  firstSeenAt       DateTime
-  lastSeenAt        DateTime
-  removedAt         DateTime?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  metadata          Json?
+  id                 String    @id @default(uuid()) @db.Uuid
+  companyId          String    @map("company_id") @db.Uuid
+  externalId         String?   @map("external_id") @db.VarChar(255)
+  source             String    @db.VarChar(50)
+  sourceUrl          String    @map("source_url") @db.VarChar(1000)
+  title              String    @db.VarChar(500)
+  description        String?   @db.Text
+  descriptionHtml    String?   @map("description_html") @db.Text
+  location           String?   @db.VarChar(255)
+  remoteType         String?   @map("remote_type") @db.VarChar(50)
+  isRemote           Boolean?  @map("is_remote")
+  employmentType     String?   @map("employment_type") @db.VarChar(50)
+  seniorityLevel     String?   @map("seniority_level") @db.VarChar(50)
+  department         String?   @db.VarChar(100)
+  team               String?   @db.VarChar(100)
+  descriptionHash    String?   @map("description_hash") @db.VarChar(64)
+  publishedAt        DateTime? @map("published_at")
+  jobUrl             String?   @map("job_url") @db.VarChar(1000)
+  applyUrl           String?   @map("apply_url") @db.VarChar(1000)
+  compensation       Json?
+  secondaryLocations Json?     @map("secondary_locations")
+  firstSeenAt        DateTime  @map("first_seen_at")
+  lastSeenAt         DateTime  @map("last_seen_at")
+  removedAt          DateTime? @map("removed_at")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  metadata           Json?
 
-  company    Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@unique([companyId, source, externalId])
   @@index([companyId])
@@ -73,21 +73,21 @@ model JobPosting {
 
 /// News Article — scraped news about a company
 model NewsArticle {
-  id            String    @id @default(uuid()) @db.Uuid
-  companyId     String    @db.Uuid
-  externalUrl   String    @db.VarChar(2000)
-  title         String    @db.VarChar(1000)
-  snippet       String?   @db.Text
-  content       String?   @db.Text
-  publishedAt   DateTime?
-  source        String    @db.VarChar(50) // 'tavily'
-  sentiment     String?   @db.VarChar(20) // 'positive' | 'negative' | 'neutral' | 'mixed'
-  rawScore      Decimal?  @db.Decimal(5, 4)
-  contentHash   String?   @db.VarChar(64)
-  firstSeenAt   DateTime
-  lastSeenAt    DateTime
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id          String    @id @default(uuid()) @db.Uuid
+  companyId   String    @map("company_id") @db.Uuid
+  externalUrl String    @map("external_url") @db.VarChar(2000)
+  title       String    @db.VarChar(1000)
+  snippet     String?   @db.Text
+  content     String?   @db.Text
+  publishedAt DateTime? @map("published_at")
+  source      String    @db.VarChar(50)
+  sentiment   String?   @db.VarChar(20)
+  rawScore    Decimal?  @map("raw_score") @db.Decimal(5, 4)
+  contentHash String?   @map("content_hash") @db.VarChar(64)
+  firstSeenAt DateTime  @map("first_seen_at")
+  lastSeenAt  DateTime  @map("last_seen_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
@@ -101,18 +101,19 @@ model NewsArticle {
 
 /// TDD §3.1 — Scraping Run
 model ScrapingRun {
-  id            String    @id @default(uuid()) @db.Uuid
-  companyId     String    @db.Uuid
-  source        String    @db.VarChar(50)
-  status        String    @db.VarChar(50) // 'pending' | 'running' | 'completed' | 'failed'
-  jobsFound     Int?
-  jobsNew       Int?
-  jobsUpdated   Int?
-  jobsRemoved   Int?
-  errorMessage  String?   @db.Text
-  startedAt     DateTime?
-  completedAt   DateTime?
-  createdAt     DateTime  @default(now())
+  id           String    @id @default(uuid()) @db.Uuid
+  companyId    String    @map("company_id") @db.Uuid
+  companySlug  String    @map("company_slug") @db.VarChar(255)
+  source       String    @db.VarChar(50)
+  status       String    @db.VarChar(50)
+  jobsFound    Int?      @map("jobs_found")
+  jobsNew      Int?      @map("jobs_new")
+  jobsUpdated  Int?      @map("jobs_updated")
+  jobsRemoved  Int?      @map("jobs_removed")
+  errorMessage String?   @map("error_message") @db.Text
+  startedAt    DateTime? @map("started_at")
+  completedAt  DateTime? @map("completed_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
@@ -125,21 +126,21 @@ model ScrapingRun {
 /// TDD §3.1 — Company Health Metrics
 model CompanyHealthMetric {
   id                       String   @id @default(uuid()) @db.Uuid
-  companyId                String   @db.Uuid
-  metricDate               DateTime @db.Date
-  totalActiveJobs          Int
-  jobsAdded7d              Int?
-  jobsRemoved7d            Int?
-  jobsAdded30d             Int?
-  jobsRemoved30d           Int?
-  jobVelocityScore         Decimal? @db.Decimal(5, 2)
-  departmentDiversityScore Decimal? @db.Decimal(5, 2)
-  locationDiversityScore   Decimal? @db.Decimal(5, 2)
-  seniorityDistribution    Json?
-  departmentDistribution   Json?
-  healthScore              Decimal? @db.Decimal(5, 2)
-  growthIndicator          String?  @db.VarChar(50)
-  createdAt                DateTime @default(now())
+  companyId                String   @map("company_id") @db.Uuid
+  metricDate               DateTime @map("metric_date") @db.Date
+  totalActiveJobs          Int      @map("total_active_jobs")
+  jobsAdded7d              Int?     @map("jobs_added_7d")
+  jobsRemoved7d            Int?     @map("jobs_removed_7d")
+  jobsAdded30d             Int?     @map("jobs_added_30d")
+  jobsRemoved30d           Int?     @map("jobs_removed_30d")
+  jobVelocityScore         Decimal? @map("job_velocity_score") @db.Decimal(5, 2)
+  departmentDiversityScore Decimal? @map("department_diversity_score") @db.Decimal(5, 2)
+  locationDiversityScore   Decimal? @map("location_diversity_score") @db.Decimal(5, 2)
+  seniorityDistribution    Json?    @map("seniority_distribution")
+  departmentDistribution   Json?    @map("department_distribution")
+  healthScore              Decimal? @map("health_score") @db.Decimal(5, 2)
+  growthIndicator          String?  @map("growth_indicator") @db.VarChar(50)
+  createdAt                DateTime @default(now()) @map("created_at")
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 

@@ -9,7 +9,7 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    // Use direct connection for migrations (pooler doesn't support migration engine)
-    url: process.env["DATABASE_URL"],
+    // Direct connection for migrations (pooler doesn't support migration engine)
+    url: process.env["POSTGRES_URL_NON_POOLING"],
   },
 });

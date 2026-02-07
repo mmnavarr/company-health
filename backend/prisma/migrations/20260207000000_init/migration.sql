@@ -2,47 +2,49 @@
 CREATE TABLE "companies" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" VARCHAR(255) NOT NULL,
-    "linkedinUrl" VARCHAR(500),
-    "ashbyUrl" VARCHAR(500),
-    "careersPageUrl" VARCHAR(500),
+    "slug" VARCHAR(255) NOT NULL,
+    "linkedin_url" VARCHAR(500),
+    "ashby_board_name" VARCHAR(500),
+    "careers_page_url" VARCHAR(500),
     "industry" VARCHAR(100),
-    "companySize" VARCHAR(50),
-    "headquartersLocation" VARCHAR(255),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "company_size" VARCHAR(50),
+    "headquarters_location" VARCHAR(255),
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "metadata" JSONB,
 
-    CONSTRAINT "companies_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "companies_pkey" PRIMARY KEY ("id"),
+    
 );
 
 -- CreateTable
 CREATE TABLE "job_postings" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "companyId" UUID NOT NULL,
-    "externalId" VARCHAR(255),
+    "company_id" UUID NOT NULL,
+    "external_id" VARCHAR(255),
     "source" VARCHAR(50) NOT NULL,
-    "sourceUrl" VARCHAR(1000) NOT NULL,
+    "source_url" VARCHAR(1000) NOT NULL,
     "title" VARCHAR(500) NOT NULL,
     "description" TEXT,
-    "descriptionHtml" TEXT,
+    "description_html" TEXT,
     "location" VARCHAR(255),
-    "remoteType" VARCHAR(50),
-    "isRemote" BOOLEAN,
-    "employmentType" VARCHAR(50),
-    "seniorityLevel" VARCHAR(50),
+    "remote_type" VARCHAR(50),
+    "is_remote" BOOLEAN,
+    "employment_type" VARCHAR(50),
+    "seniority_level" VARCHAR(50),
     "department" VARCHAR(100),
     "team" VARCHAR(100),
-    "descriptionHash" VARCHAR(64),
-    "publishedAt" TIMESTAMP(3),
-    "jobUrl" VARCHAR(1000),
-    "applyUrl" VARCHAR(1000),
+    "description_hash" VARCHAR(64),
+    "published_at" TIMESTAMP(3),
+    "job_url" VARCHAR(1000),
+    "apply_url" VARCHAR(1000),
     "compensation" JSONB,
-    "secondaryLocations" JSONB,
-    "firstSeenAt" TIMESTAMP(3) NOT NULL,
-    "lastSeenAt" TIMESTAMP(3) NOT NULL,
-    "removedAt" TIMESTAMP(3),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "secondary_locations" JSONB,
+    "first_seen_at" TIMESTAMP(3) NOT NULL,
+    "last_seen_at" TIMESTAMP(3) NOT NULL,
+    "removed_at" TIMESTAMP(3),
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "metadata" JSONB,
 
     CONSTRAINT "job_postings_pkey" PRIMARY KEY ("id")
@@ -51,20 +53,20 @@ CREATE TABLE "job_postings" (
 -- CreateTable
 CREATE TABLE "news_articles" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "companyId" UUID NOT NULL,
-    "externalUrl" VARCHAR(2000) NOT NULL,
+    "company_id" UUID NOT NULL,
+    "external_url" VARCHAR(2000) NOT NULL,
     "title" VARCHAR(1000) NOT NULL,
     "snippet" TEXT,
     "content" TEXT,
-    "publishedAt" TIMESTAMP(3),
+    "published_at" TIMESTAMP(3),
     "source" VARCHAR(50) NOT NULL,
     "sentiment" VARCHAR(20),
-    "rawScore" DECIMAL(5,4),
-    "contentHash" VARCHAR(64),
-    "firstSeenAt" TIMESTAMP(3) NOT NULL,
-    "lastSeenAt" TIMESTAMP(3) NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "raw_score" DECIMAL(5,4),
+    "content_hash" VARCHAR(64),
+    "first_seen_at" TIMESTAMP(3) NOT NULL,
+    "last_seen_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "news_articles_pkey" PRIMARY KEY ("id")
 );
@@ -72,17 +74,17 @@ CREATE TABLE "news_articles" (
 -- CreateTable
 CREATE TABLE "scraping_runs" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "companyId" UUID NOT NULL,
+    "company_id" UUID NOT NULL,
     "source" VARCHAR(50) NOT NULL,
     "status" VARCHAR(50) NOT NULL,
-    "jobsFound" INTEGER,
-    "jobsNew" INTEGER,
-    "jobsUpdated" INTEGER,
-    "jobsRemoved" INTEGER,
-    "errorMessage" TEXT,
-    "startedAt" TIMESTAMP(3),
-    "completedAt" TIMESTAMP(3),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "jobs_found" INTEGER,
+    "jobs_new" INTEGER,
+    "jobs_updated" INTEGER,
+    "jobs_removed" INTEGER,
+    "error_message" TEXT,
+    "started_at" TIMESTAMP(3),
+    "completed_at" TIMESTAMP(3),
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "scraping_runs_pkey" PRIMARY KEY ("id")
 );
@@ -90,60 +92,61 @@ CREATE TABLE "scraping_runs" (
 -- CreateTable
 CREATE TABLE "company_health_metrics" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "companyId" UUID NOT NULL,
-    "metricDate" DATE NOT NULL,
-    "totalActiveJobs" INTEGER NOT NULL,
-    "jobsAdded7d" INTEGER,
-    "jobsRemoved7d" INTEGER,
-    "jobsAdded30d" INTEGER,
-    "jobsRemoved30d" INTEGER,
-    "jobVelocityScore" DECIMAL(5,2),
-    "departmentDiversityScore" DECIMAL(5,2),
-    "locationDiversityScore" DECIMAL(5,2),
-    "seniorityDistribution" JSONB,
-    "departmentDistribution" JSONB,
-    "healthScore" DECIMAL(5,2),
-    "growthIndicator" VARCHAR(50),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "company_id" UUID NOT NULL,
+    "metric_date" DATE NOT NULL,
+    "total_active_jobs" INTEGER NOT NULL,
+    "jobs_added_7d" INTEGER,
+    "jobs_removed_7d" INTEGER,
+    "jobs_added_30d" INTEGER,
+    "jobs_removed_30d" INTEGER,
+    "job_velocity_score" DECIMAL(5,2),
+    "department_diversity_score" DECIMAL(5,2),
+    "location_diversity_score" DECIMAL(5,2),
+    "seniority_distribution" JSONB,
+    "department_distribution" JSONB,
+    "health_score" DECIMAL(5,2),
+    "growth_indicator" VARCHAR(50),
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "company_health_metrics_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
 CREATE INDEX "companies_name_idx" ON "companies"("name");
+CREATE UNIQUE INDEX "companies_slug_key" ON "companies"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "job_postings_companyId_source_externalId_key" ON "job_postings"("companyId", "source", "externalId");
-CREATE INDEX "job_postings_companyId_idx" ON "job_postings"("companyId");
+CREATE UNIQUE INDEX "job_postings_company_id_source_external_id_key" ON "job_postings"("company_id", "source", "external_id");
+CREATE INDEX "job_postings_company_id_idx" ON "job_postings"("company_id");
 CREATE INDEX "job_postings_source_idx" ON "job_postings"("source");
-CREATE INDEX "job_postings_firstSeenAt_idx" ON "job_postings"("firstSeenAt");
-CREATE INDEX "job_postings_removedAt_idx" ON "job_postings"("removedAt");
+CREATE INDEX "job_postings_first_seen_at_idx" ON "job_postings"("first_seen_at");
+CREATE INDEX "job_postings_removed_at_idx" ON "job_postings"("removed_at");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "news_articles_companyId_externalUrl_key" ON "news_articles"("companyId", "externalUrl");
-CREATE INDEX "news_articles_companyId_idx" ON "news_articles"("companyId");
+CREATE UNIQUE INDEX "news_articles_company_id_external_url_key" ON "news_articles"("company_id", "external_url");
+CREATE INDEX "news_articles_company_id_idx" ON "news_articles"("company_id");
 CREATE INDEX "news_articles_source_idx" ON "news_articles"("source");
-CREATE INDEX "news_articles_publishedAt_idx" ON "news_articles"("publishedAt");
-CREATE INDEX "news_articles_firstSeenAt_idx" ON "news_articles"("firstSeenAt");
+CREATE INDEX "news_articles_published_at_idx" ON "news_articles"("published_at");
+CREATE INDEX "news_articles_first_seen_at_idx" ON "news_articles"("first_seen_at");
 
 -- CreateIndex
-CREATE INDEX "scraping_runs_companyId_idx" ON "scraping_runs"("companyId");
+CREATE INDEX "scraping_runs_company_id_idx" ON "scraping_runs"("company_id");
 CREATE INDEX "scraping_runs_status_idx" ON "scraping_runs"("status");
-CREATE INDEX "scraping_runs_startedAt_idx" ON "scraping_runs"("startedAt");
+CREATE INDEX "scraping_runs_started_at_idx" ON "scraping_runs"("started_at");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "company_health_metrics_companyId_metricDate_key" ON "company_health_metrics"("companyId", "metricDate");
-CREATE INDEX "company_health_metrics_companyId_idx" ON "company_health_metrics"("companyId");
-CREATE INDEX "company_health_metrics_metricDate_idx" ON "company_health_metrics"("metricDate");
+CREATE UNIQUE INDEX "company_health_metrics_company_id_metric_date_key" ON "company_health_metrics"("company_id", "metric_date");
+CREATE INDEX "company_health_metrics_company_id_idx" ON "company_health_metrics"("company_id");
+CREATE INDEX "company_health_metrics_metric_date_idx" ON "company_health_metrics"("metric_date");
 
 -- AddForeignKey
-ALTER TABLE "job_postings" ADD CONSTRAINT "job_postings_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "job_postings" ADD CONSTRAINT "job_postings_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "news_articles" ADD CONSTRAINT "news_articles_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "news_articles" ADD CONSTRAINT "news_articles_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "scraping_runs" ADD CONSTRAINT "scraping_runs_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "scraping_runs" ADD CONSTRAINT "scraping_runs_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "company_health_metrics" ADD CONSTRAINT "company_health_metrics_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "company_health_metrics" ADD CONSTRAINT "company_health_metrics_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
