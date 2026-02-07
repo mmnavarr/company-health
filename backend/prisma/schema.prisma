@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// TDD §3.1 — Company
+model Company {
+  id                    String   @id @default(uuid()) @db.Uuid
+  name                  String   @db.VarChar(255)
+  linkedinUrl           String?  @db.VarChar(500)
+  ashbyUrl              String?  @db.VarChar(500)
+  careersPageUrl        String?  @db.VarChar(500)
+  industry              String?  @db.VarChar(100)
+  companySize           String?  @db.VarChar(50)
+  headquartersLocation  String?  @db.VarChar(255)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  metadata              Json?
+
+  jobPostings    JobPosting[]
+  newsArticles   NewsArticle[]
+
+  scrapingRuns   ScrapingRun[]
+  healthMetrics  CompanyHealthMetric[]
+
+  @@index([name])
+  @@map("companies")
+}
+
+/// TDD §3.1 — Job Posting (normalized from any scraper source)
+model JobPosting {
+  id                String    @id @default(uuid()) @db.Uuid
+  companyId         String    @db.Uuid
+  externalId        String?   @db.VarChar(255)
+  source            String    @db.VarChar(50) // 'linkedin' | 'ashby' | 'website'
+  sourceUrl         String    @db.VarChar(1000)
+  title             String    @db.VarChar(500)
+  description       String?   @db.Text
+  descriptionHtml   String?   @db.Text
+  location          String?   @db.VarChar(255)
+  remoteType        String?   @db.VarChar(50) // 'remote' | 'hybrid' | 'onsite'
+  isRemote          Boolean?
+  employmentType    String?   @db.VarChar(50)
+  seniorityLevel    String?   @db.VarChar(50)
+  department        String?   @db.VarChar(100)
+  team              String?   @db.VarChar(100)
+  descriptionHash   String?   @db.VarChar(64)
+  publishedAt       DateTime?
+  jobUrl            String?   @db.VarChar(1000)
+  applyUrl          String?   @db.VarChar(1000)
+  compensation      Json?
+  secondaryLocations Json?
+  firstSeenAt       DateTime
+  lastSeenAt        DateTime
+  removedAt         DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  metadata          Json?
+
+  company    Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, source, externalId])
+  @@index([companyId])
+  @@index([source])
+  @@index([firstSeenAt])
+  @@index([removedAt])
+  @@map("job_postings")
+}
+
+/// News Article — scraped news about a company
+model NewsArticle {
+  id            String    @id @default(uuid()) @db.Uuid
+  companyId     String    @db.Uuid
+  externalUrl   String    @db.VarChar(2000)
+  title         String    @db.VarChar(1000)
+  snippet       String?   @db.Text
+  content       String?   @db.Text
+  publishedAt   DateTime?
+  source        String    @db.VarChar(50) // 'tavily'
+  sentiment     String?   @db.VarChar(20) // 'positive' | 'negative' | 'neutral' | 'mixed'
+  rawScore      Decimal?  @db.Decimal(5, 4)
+  contentHash   String?   @db.VarChar(64)
+  firstSeenAt   DateTime
+  lastSeenAt    DateTime
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, externalUrl])
+  @@index([companyId])
+  @@index([source])
+  @@index([publishedAt])
+  @@index([firstSeenAt])
+  @@map("news_articles")
+}
+
+/// TDD §3.1 — Scraping Run
+model ScrapingRun {
+  id            String    @id @default(uuid()) @db.Uuid
+  companyId     String    @db.Uuid
+  source        String    @db.VarChar(50)
+  status        String    @db.VarChar(50) // 'pending' | 'running' | 'completed' | 'failed'
+  jobsFound     Int?
+  jobsNew       Int?
+  jobsUpdated   Int?
+  jobsRemoved   Int?
+  errorMessage  String?   @db.Text
+  startedAt     DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime  @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([status])
+  @@index([startedAt])
+  @@map("scraping_runs")
+}
+
+/// TDD §3.1 — Company Health Metrics
+model CompanyHealthMetric {
+  id                       String   @id @default(uuid()) @db.Uuid
+  companyId                String   @db.Uuid
+  metricDate               DateTime @db.Date
+  totalActiveJobs          Int
+  jobsAdded7d              Int?
+  jobsRemoved7d            Int?
+  jobsAdded30d             Int?
+  jobsRemoved30d           Int?
+  jobVelocityScore         Decimal? @db.Decimal(5, 2)
+  departmentDiversityScore Decimal? @db.Decimal(5, 2)
+  locationDiversityScore   Decimal? @db.Decimal(5, 2)
+  seniorityDistribution    Json?
+  departmentDistribution   Json?
+  healthScore              Decimal? @db.Decimal(5, 2)
+  growthIndicator          String?  @db.VarChar(50)
+  createdAt                DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, metricDate])
+  @@index([companyId])
+  @@index([metricDate])
+  @@map("company_health_metrics")
+}

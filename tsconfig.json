@@ -13,9 +13,9 @@
     "types": ["bun-types"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["backend/src/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["backend/src/**/*", "backend/generated/**/*"],
   "exclude": ["node_modules", "dist"]
 }
