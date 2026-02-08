@@ -2,14 +2,17 @@
 
 import { type ILogObj, Logger } from "tslog";
 
-export class Job {
+export abstract class Job {
   protected readonly log: Logger<ILogObj>;
 
   constructor(name: string) {
     this.log = new Logger({ name });
   }
 
-  async run(_args: Record<string, unknown>): Promise<unknown> {
-    return await Promise.resolve(null);
-  }
+  /**
+   * Run the job
+   * @param args - The arguments for the job
+   * @returns The result of the job execution
+   */
+  abstract run(args: Record<string, unknown>): Promise<unknown>;
 }

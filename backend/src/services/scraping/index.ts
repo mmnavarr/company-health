@@ -12,6 +12,6 @@ export interface ScrapingService {
   scrape<T extends object>(identifier: string): Promise<T>;
 }
 
-export { AshbyScrapingService as AshbyScraper } from "./ashby-scraper";
-export { LinkedInScrapingService as LinkedInScrapingService } from "./linkedin-scraper";
-export { TavilyNewsScrapingService as TavilyNewsScrapingService } from "./tavily-news-scraper";
+export { AshbyScrapingService } from "./ashby-scraper";
+export { LinkedInScrapingService } from "./linkedin-scraper";
+export { TavilyNewsScrapingService } from "./tavily-news-scraper";

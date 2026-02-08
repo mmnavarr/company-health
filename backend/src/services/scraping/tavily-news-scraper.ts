@@ -20,7 +20,7 @@ export interface TavilyNewsResponse {
 }
 
 export class TavilyNewsScrapingService implements ScrapingService {
-  private client: ReturnType<typeof tavily>;
+  private readonly client: ReturnType<typeof tavily>;
 
   constructor(apiKey: string) {
     if (!apiKey) {

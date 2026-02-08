@@ -4,7 +4,7 @@
 
 import type { ScrapingService } from ".";
 
-interface LinkedInJob {
+export interface LinkedInJob {
   title: string;
   location: string;
   company: string;
@@ -14,7 +14,9 @@ interface LinkedInJob {
 }
 
 export class LinkedInScrapingService implements ScrapingService {
-  async scrape<LinkedInJob>(_companyName: string): Promise<LinkedInJob> {
-    return [] as any;
+
+  // biome-ignore lint/suspicious/useAwait: Unimplemented
+    async scrape<LinkedInJob>(_companyName: string): Promise<LinkedInJob> {
+    return [] as LinkedInJob;
   }
 }
