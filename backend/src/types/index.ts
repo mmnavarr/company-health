@@ -43,4 +43,3 @@ export interface CompanyHealthMetrics {
   growthIndicator?: GrowthIndicator;
   createdAt: Date;
 }
-

@@ -4,7 +4,7 @@
  */
 
 import { AshbyScraper } from "../src/scraping";
-import { AshbyJobsResponse } from "../src/scraping/ashby-scraper";
+import type { AshbyJobsResponse } from "../src/scraping/ashby-scraper";
 
 const JOB_BOARD_NAME = "rain";
 

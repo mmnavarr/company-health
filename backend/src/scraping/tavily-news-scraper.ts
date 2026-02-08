@@ -3,7 +3,7 @@
  */
 
 import { tavily } from "@tavily/core";
-import { Scraper } from ".";
+import type { Scraper } from ".";
 
 export interface TavilyNewsResult {
   title: string;
@@ -33,7 +33,9 @@ export class TavilyNewsScraper implements Scraper {
    * @param companyName - The company name to search for
    * @returns Array of news results
    */
-  async scrape<TavilyNewsResponse>(companyName: string): Promise<TavilyNewsResponse> {
+  async scrape<TavilyNewsResponse>(
+    companyName: string
+  ): Promise<TavilyNewsResponse> {
     const query = `"${companyName}" company news`;
 
     const response = await this.client.search(query, {

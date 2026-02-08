@@ -4,12 +4,12 @@
  */
 
 import { createHash } from "node:crypto";
-import type { AshbyJob } from "../scraping/ashby-scraper";
-import type { JobSource, RawNewsData } from "../types";
+import { type ILogObj, Logger } from "tslog";
 import { prisma } from "../lib/prisma";
 import { uploadJson } from "../lib/storage";
+import type { AshbyJob } from "../scraping/ashby-scraper";
+import type { JobSource, RawNewsData } from "../types";
 import { normalizeJob } from "./index";
-import { Logger, ILogObj } from "tslog";
 
 export class DataProcessor {
   private readonly log: Logger<ILogObj> = new Logger();
@@ -50,7 +50,7 @@ export class DataProcessor {
   async upsertAshbyJobs(
     companyId: string,
     jobBoardName: string,
-    jobs: AshbyJob[],
+    jobs: AshbyJob[]
   ): Promise<{ jobsNew: number; jobsUpdated: number; jobsRemoved: number }> {
     const now = new Date();
     let jobsNew = 0;
@@ -69,7 +69,9 @@ export class DataProcessor {
       },
       select: { id: true, externalId: true, descriptionHash: true },
     });
-    this.log.debug(`Found ${existingRows.length} existing jobs for company ${companyId}`);
+    this.log.debug(
+      `Found ${existingRows.length} existing jobs for company ${companyId}`
+    );
     const existingByExternalId = new Map(
       existingRows.map((row) => [row.externalId, row])
     );
@@ -77,7 +79,11 @@ export class DataProcessor {
     const seenExternalIds = new Set<string>();
 
     // Prepare all job data before touching the DB
-    const updateOps: Array<{ existingId: string; data: Record<string, any>; changed: boolean }> = [];
+    const updateOps: Array<{
+      existingId: string;
+      data: Record<string, any>;
+      changed: boolean;
+    }> = [];
     const createOps: Array<any> = [];
 
     for (const job of jobs) {
@@ -86,7 +92,8 @@ export class DataProcessor {
       const { remoteType, seniorityLevel } = normalizeJob(job);
       const description = job.descriptionPlain ?? job.descriptionHtml;
       const descriptionHash = hashContent(description);
-      const sourceUrl = job.jobUrl ?? `https://jobs.ashbyhq.com/${jobBoardName}/${job.id}`;
+      const sourceUrl =
+        job.jobUrl ?? `https://jobs.ashbyhq.com/${jobBoardName}/${job.id}`;
 
       const jobData = {
         title: job.title?.trim() ?? "",
@@ -103,8 +110,8 @@ export class DataProcessor {
         publishedAt: job.publishedAt ? new Date(job.publishedAt) : undefined,
         jobUrl: job.jobUrl,
         applyUrl: job.applyUrl,
-        compensation: job.compensation as any ?? undefined,
-        secondaryLocations: job.secondaryLocations as any ?? undefined,
+        compensation: (job.compensation as any) ?? undefined,
+        secondaryLocations: (job.secondaryLocations as any) ?? undefined,
         lastSeenAt: now,
       };
 
@@ -117,7 +124,9 @@ export class DataProcessor {
           data: { ...jobData, removedAt: null },
           changed,
         });
-        if (changed) jobsUpdated++;
+        if (changed) {
+          jobsUpdated++;
+        }
       } else {
         createOps.push({
           companyId,
@@ -202,7 +211,9 @@ export class DataProcessor {
             title: article.title,
             snippet: article.snippet,
             content: article.content,
-            publishedAt: article.publishedAt ? new Date(article.publishedAt) : undefined,
+            publishedAt: article.publishedAt
+              ? new Date(article.publishedAt)
+              : undefined,
             source: article.source,
 
             rawScore: article.score,
@@ -210,7 +221,9 @@ export class DataProcessor {
             lastSeenAt: now,
           },
         });
-        if (changed) articlesUpdated++;
+        if (changed) {
+          articlesUpdated++;
+        }
       } else {
         await prisma.newsArticle.create({
           data: {
@@ -219,7 +232,9 @@ export class DataProcessor {
             title: article.title,
             snippet: article.snippet,
             content: article.content,
-            publishedAt: article.publishedAt ? new Date(article.publishedAt) : undefined,
+            publishedAt: article.publishedAt
+              ? new Date(article.publishedAt)
+              : undefined,
             source: article.source,
 
             rawScore: article.score,
@@ -243,7 +258,7 @@ export class DataProcessor {
   }
 
   private async storeLinkedInRaw(data: unknown): Promise<string> {
-   throw new Error("Not implemented");
+    throw new Error("Not implemented");
   }
 
   private async storeWebsiteRaw(data: unknown): Promise<string> {
@@ -252,7 +267,9 @@ export class DataProcessor {
 }
 
 function hashContent(content?: string): string {
-  return createHash("sha256").update(content ?? "").digest("hex");
+  return createHash("sha256")
+    .update(content ?? "")
+    .digest("hex");
 }
 
 function slugify(text?: string): string {
@@ -262,4 +279,3 @@ function slugify(text?: string): string {
     .replace(/^-|-$/g, "")
     .slice(0, 80);
 }
-

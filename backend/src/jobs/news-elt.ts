@@ -5,10 +5,12 @@
  * 3. Transformation: Upsert news articles to DB with content hash change detection
  */
 
-import { randomUUID } from "node:crypto";
-import { TavilyNewsResponse, TavilyNewsScraper } from "../scraping/tavily-news-scraper";
 import { DataProcessor } from "../data";
 import { prisma } from "../lib/prisma";
+import {
+  type TavilyNewsResponse,
+  TavilyNewsScraper,
+} from "../scraping/tavily-news-scraper";
 import type { RawNewsData } from "../types";
 
 export interface NewsELTPipelineResult {
@@ -25,7 +27,7 @@ export interface NewsELTPipelineResult {
  * @param companyDomain - Company domain for the companies table
  */
 export async function runNewsELTPipeline(
-  companySlug: string,
+  companySlug: string
 ): Promise<NewsELTPipelineResult> {
   if (!companySlug) {
     throw new Error("Company slug is required");
@@ -52,7 +54,9 @@ export async function runNewsELTPipeline(
   const results = response.results;
   pipelineResult.articlesFound = results.length;
 
-  if (results.length === 0) return pipelineResult;
+  if (results.length === 0) {
+    return pipelineResult;
+  }
 
   // Map to RawNewsData
   const articles: RawNewsData[] = results.map((r) => ({

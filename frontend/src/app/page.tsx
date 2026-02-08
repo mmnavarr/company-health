@@ -79,11 +79,11 @@ export default function Home() {
       <div className="mx-auto w-full max-w-6xl px-6 py-10">
         <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-slate-400">
+            <p className="text-slate-400 text-sm uppercase tracking-[0.2em]">
               Company Health
             </p>
-            <h1 className="text-4xl font-semibold">{company.name}</h1>
-            <div className="mt-2 flex flex-wrap gap-3 text-sm text-slate-400">
+            <h1 className="font-semibold text-4xl">{company.name}</h1>
+            <div className="mt-2 flex flex-wrap gap-3 text-slate-400 text-sm">
               <span>{company.industry}</span>
               <span>•</span>
               <span>{company.companySize} employees</span>
@@ -95,17 +95,17 @@ export default function Home() {
           </div>
           <div className="rounded-2xl border border-slate-800 bg-slate-900/40 px-6 py-4">
             <div className="flex items-center gap-4">
-              <div className="text-5xl font-semibold">{health.score}</div>
+              <div className="font-semibold text-5xl">{health.score}</div>
               <div>
-                <p className="text-sm text-slate-400">Health score</p>
+                <p className="text-slate-400 text-sm">Health score</p>
                 <span
-                  className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${growthBadge}`}
+                  className={`mt-2 inline-flex rounded-full px-3 py-1 font-semibold text-xs ${growthBadge}`}
                 >
                   {health.growthIndicator}
                 </span>
               </div>
             </div>
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="mt-2 text-slate-500 text-xs">
               Updated {health.lastUpdated}
             </p>
           </div>
@@ -113,41 +113,51 @@ export default function Home() {
 
         <section className="mt-10 grid gap-6 md:grid-cols-3">
           <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+            <p className="text-slate-500 text-xs uppercase tracking-[0.2em]">
               Active jobs
             </p>
-            <p className="mt-3 text-3xl font-semibold">
+            <p className="mt-3 font-semibold text-3xl">
               {health.totalActiveJobs}
             </p>
-            <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-slate-400">
+            <div className="mt-4 grid grid-cols-2 gap-3 text-slate-400 text-sm">
               <div>
-                <p className="text-xs text-slate-500">Added (7d)</p>
-                <p className="text-base text-emerald-400">{health.jobsAdded7d}</p>
+                <p className="text-slate-500 text-xs">Added (7d)</p>
+                <p className="text-base text-emerald-400">
+                  {health.jobsAdded7d}
+                </p>
               </div>
               <div>
-                <p className="text-xs text-slate-500">Removed (7d)</p>
-                <p className="text-base text-rose-400">{health.jobsRemoved7d}</p>
+                <p className="text-slate-500 text-xs">Removed (7d)</p>
+                <p className="text-base text-rose-400">
+                  {health.jobsRemoved7d}
+                </p>
               </div>
               <div>
-                <p className="text-xs text-slate-500">Added (30d)</p>
-                <p className="text-base text-emerald-400">{health.jobsAdded30d}</p>
+                <p className="text-slate-500 text-xs">Added (30d)</p>
+                <p className="text-base text-emerald-400">
+                  {health.jobsAdded30d}
+                </p>
               </div>
               <div>
-                <p className="text-xs text-slate-500">Removed (30d)</p>
-                <p className="text-base text-rose-400">{health.jobsRemoved30d}</p>
+                <p className="text-slate-500 text-xs">Removed (30d)</p>
+                <p className="text-base text-rose-400">
+                  {health.jobsRemoved30d}
+                </p>
               </div>
             </div>
           </div>
 
           <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+            <p className="text-slate-500 text-xs uppercase tracking-[0.2em]">
               Velocity & diversity
             </p>
             <div className="mt-4 space-y-4">
               <div>
-                <div className="flex items-center justify-between text-sm text-slate-400">
+                <div className="flex items-center justify-between text-slate-400 text-sm">
                   <span>Job velocity score</span>
-                  <span className="text-slate-200">{health.jobVelocityScore}</span>
+                  <span className="text-slate-200">
+                    {health.jobVelocityScore}
+                  </span>
                 </div>
                 <div className="mt-2 h-2 rounded-full bg-slate-800">
                   <div
@@ -157,7 +167,7 @@ export default function Home() {
                 </div>
               </div>
               <div>
-                <div className="flex items-center justify-between text-sm text-slate-400">
+                <div className="flex items-center justify-between text-slate-400 text-sm">
                   <span>Department diversity</span>
                   <span className="text-slate-200">
                     {health.departmentDiversityScore}
@@ -171,7 +181,7 @@ export default function Home() {
                 </div>
               </div>
               <div>
-                <div className="flex items-center justify-between text-sm text-slate-400">
+                <div className="flex items-center justify-between text-slate-400 text-sm">
                   <span>Location diversity</span>
                   <span className="text-slate-200">
                     {health.locationDiversityScore}
@@ -188,10 +198,10 @@ export default function Home() {
           </div>
 
           <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+            <p className="text-slate-500 text-xs uppercase tracking-[0.2em]">
               Signals
             </p>
-            <ul className="mt-4 space-y-3 text-sm text-slate-300">
+            <ul className="mt-4 space-y-3 text-slate-300 text-sm">
               <li className="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
                 Hiring is accelerating in engineering and sales.
               </li>
@@ -208,16 +218,16 @@ export default function Home() {
         <section className="mt-10 grid gap-6 lg:grid-cols-3">
           <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 lg:col-span-2">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-slate-200">
+              <p className="font-semibold text-slate-200 text-sm">
                 Department distribution
               </p>
-              <span className="text-xs text-slate-500">last 30 days</span>
+              <span className="text-slate-500 text-xs">last 30 days</span>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {departmentDistribution.map((item) => (
                 <div
-                  key={item.name}
                   className="rounded-lg border border-slate-800 bg-slate-950/40 p-3"
+                  key={item.name}
                 >
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-300">{item.name}</span>
@@ -235,7 +245,7 @@ export default function Home() {
           </div>
 
           <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
-            <p className="text-sm font-semibold text-slate-200">
+            <p className="font-semibold text-slate-200 text-sm">
               Seniority mix
             </p>
             <div className="mt-4 space-y-3">
@@ -259,21 +269,21 @@ export default function Home() {
 
         <section className="mt-10 rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-slate-200">
+            <p className="font-semibold text-slate-200 text-sm">
               Recent scraping runs
             </p>
-            <button className="rounded-full border border-slate-700 px-4 py-1 text-xs text-slate-300">
+            <button className="rounded-full border border-slate-700 px-4 py-1 text-slate-300 text-xs">
               Trigger scrape
             </button>
           </div>
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             {recentRuns.map((run) => (
               <div
-                key={`${run.source}-${run.completedAt}`}
                 className="rounded-lg border border-slate-800 bg-slate-950/40 p-3 text-sm"
+                key={`${run.source}-${run.completedAt}`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="uppercase text-slate-400">{run.source}</span>
+                  <span className="text-slate-400 uppercase">{run.source}</span>
                   <span
                     className={`rounded-full px-2 py-0.5 text-xs ${
                       run.status === "completed"
@@ -284,8 +294,8 @@ export default function Home() {
                     {run.status}
                   </span>
                 </div>
-                <p className="mt-2 text-xs text-slate-500">{run.completedAt}</p>
-                <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-300">
+                <p className="mt-2 text-slate-500 text-xs">{run.completedAt}</p>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-slate-300 text-xs">
                   <span>Found: {run.jobsFound}</span>
                   <span>New: {run.jobsNew}</span>
                   <span>Updated: {run.jobsUpdated}</span>

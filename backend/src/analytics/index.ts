@@ -10,7 +10,12 @@ export function computeHealthMetrics(
   _companyId: string,
   _metricDate: string,
   _activeJobCount: number,
-  _deltas?: { added7d?: number; removed7d?: number; added30d?: number; removed30d?: number }
+  _deltas?: {
+    added7d?: number;
+    removed7d?: number;
+    added30d?: number;
+    removed30d?: number;
+  }
 ): Omit<CompanyHealthMetrics, "id" | "createdAt"> {
   return {
     companyId: _companyId,

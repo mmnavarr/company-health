@@ -11,7 +11,10 @@ import { put } from "@vercel/blob";
  * @param data - Data to serialize as JSON
  * @returns The blob URL where the object was stored
  */
-export async function uploadJson(pathname: string, data: unknown): Promise<string> {
+export async function uploadJson(
+  pathname: string,
+  data: unknown
+): Promise<string> {
   const { url } = await put(pathname, JSON.stringify(data, null, 2), {
     access: "public",
     contentType: "application/json",

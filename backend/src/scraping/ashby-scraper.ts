@@ -61,7 +61,12 @@ export type AshbyJob = {
   location: string;
   department?: string;
   team?: string;
-  employmentType?: "FullTime" | "PartTime" | "Intern" | "Contract" | "Temporary";
+  employmentType?:
+    | "FullTime"
+    | "PartTime"
+    | "Intern"
+    | "Contract"
+    | "Temporary";
   shouldDisplayCompensationOnJobPostings?: boolean;
   secondaryLocations?: AshbySecondaryLocation[];
   publishedAt?: string;
@@ -87,11 +92,15 @@ export class AshbyScraper implements Scraper {
     return `https://api.ashbyhq.com/posting-api/job-board/${jobBoardName}?includeCompensation=true`;
   }
 
-  async scrape<AshbyJobsResponse>(jobBoardName: string): Promise<AshbyJobsResponse> {
+  async scrape<AshbyJobsResponse>(
+    jobBoardName: string
+  ): Promise<AshbyJobsResponse> {
     const url = AshbyScraper.getJobsApiUrl(jobBoardName);
     const res = await fetch(url);
 
-    if (!res.ok) throw new Error(`Failed to fetch jobs from Ashby: ${res.statusText}`);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch jobs from Ashby: ${res.statusText}`);
+    }
 
     const data = (await res.json()) as AshbyJobsResponse;
     return data;

@@ -12,7 +12,7 @@ export interface Scraper {
   scrape<T extends object>(identifier: string): Promise<T>;
 }
 
-export { LinkedInScraper } from "./linkedin-scraper";
 export { AshbyScraper } from "./ashby-scraper";
-export { WebsiteScraper } from "./website-scraper";
+export { LinkedInScraper } from "./linkedin-scraper";
 export { TavilyNewsScraper } from "./tavily-news-scraper";
+export { WebsiteScraper } from "./website-scraper";
