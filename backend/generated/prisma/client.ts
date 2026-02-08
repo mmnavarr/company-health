@@ -64,3 +64,13 @@ export type ScrapingRun = Prisma.ScrapingRunModel
  * TDD §3.1 — Company Health Metrics
  */
 export type CompanyHealthMetric = Prisma.CompanyHealthMetricModel
+/**
+ * Model FundraisingSummary
+ * Fundraising Summary — aggregated fundraising data for a company
+ */
+export type FundraisingSummary = Prisma.FundraisingSummaryModel
+/**
+ * Model FundingRound
+ * Funding Round — individual funding round
+ */
+export type FundingRound = Prisma.FundingRoundModel

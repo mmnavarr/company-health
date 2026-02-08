@@ -28,6 +28,7 @@ export type CompanyMinAggregateOutputType = {
   id: string | null
   name: string | null
   slug: string | null
+  description: string | null
   linkedinUrl: string | null
   ashbyBoardName: string | null
   careersPageUrl: string | null
@@ -42,6 +43,7 @@ export type CompanyMaxAggregateOutputType = {
   id: string | null
   name: string | null
   slug: string | null
+  description: string | null
   linkedinUrl: string | null
   ashbyBoardName: string | null
   careersPageUrl: string | null
@@ -56,6 +58,7 @@ export type CompanyCountAggregateOutputType = {
   id: number
   name: number
   slug: number
+  description: number
   linkedinUrl: number
   ashbyBoardName: number
   careersPageUrl: number
@@ -73,6 +76,7 @@ export type CompanyMinAggregateInputType = {
   id?: true
   name?: true
   slug?: true
+  description?: true
   linkedinUrl?: true
   ashbyBoardName?: true
   careersPageUrl?: true
@@ -87,6 +91,7 @@ export type CompanyMaxAggregateInputType = {
   id?: true
   name?: true
   slug?: true
+  description?: true
   linkedinUrl?: true
   ashbyBoardName?: true
   careersPageUrl?: true
@@ -101,6 +106,7 @@ export type CompanyCountAggregateInputType = {
   id?: true
   name?: true
   slug?: true
+  description?: true
   linkedinUrl?: true
   ashbyBoardName?: true
   careersPageUrl?: true
@@ -189,6 +195,7 @@ export type CompanyGroupByOutputType = {
   id: string
   name: string
   slug: string
+  description: string | null
   linkedinUrl: string | null
   ashbyBoardName: string | null
   careersPageUrl: string | null
@@ -225,6 +232,7 @@ export type CompanyWhereInput = {
   id?: Prisma.UuidFilter<"Company"> | string
   name?: Prisma.StringFilter<"Company"> | string
   slug?: Prisma.StringFilter<"Company"> | string
+  description?: Prisma.StringNullableFilter<"Company"> | string | null
   linkedinUrl?: Prisma.StringNullableFilter<"Company"> | string | null
   ashbyBoardName?: Prisma.StringNullableFilter<"Company"> | string | null
   careersPageUrl?: Prisma.StringNullableFilter<"Company"> | string | null
@@ -238,12 +246,15 @@ export type CompanyWhereInput = {
   newsArticles?: Prisma.NewsArticleListRelationFilter
   scrapingRuns?: Prisma.ScrapingRunListRelationFilter
   healthMetrics?: Prisma.CompanyHealthMetricListRelationFilter
+  fundraisingSummary?: Prisma.XOR<Prisma.FundraisingSummaryNullableScalarRelationFilter, Prisma.FundraisingSummaryWhereInput> | null
+  fundingRounds?: Prisma.FundingRoundListRelationFilter
 }
 
 export type CompanyOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   linkedinUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   ashbyBoardName?: Prisma.SortOrderInput | Prisma.SortOrder
   careersPageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -257,6 +268,8 @@ export type CompanyOrderByWithRelationInput = {
   newsArticles?: Prisma.NewsArticleOrderByRelationAggregateInput
   scrapingRuns?: Prisma.ScrapingRunOrderByRelationAggregateInput
   healthMetrics?: Prisma.CompanyHealthMetricOrderByRelationAggregateInput
+  fundraisingSummary?: Prisma.FundraisingSummaryOrderByWithRelationInput
+  fundingRounds?: Prisma.FundingRoundOrderByRelationAggregateInput
 }
 
 export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -266,6 +279,7 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.CompanyWhereInput[]
   NOT?: Prisma.CompanyWhereInput | Prisma.CompanyWhereInput[]
   name?: Prisma.StringFilter<"Company"> | string
+  description?: Prisma.StringNullableFilter<"Company"> | string | null
   linkedinUrl?: Prisma.StringNullableFilter<"Company"> | string | null
   ashbyBoardName?: Prisma.StringNullableFilter<"Company"> | string | null
   careersPageUrl?: Prisma.StringNullableFilter<"Company"> | string | null
@@ -279,12 +293,15 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   newsArticles?: Prisma.NewsArticleListRelationFilter
   scrapingRuns?: Prisma.ScrapingRunListRelationFilter
   healthMetrics?: Prisma.CompanyHealthMetricListRelationFilter
+  fundraisingSummary?: Prisma.XOR<Prisma.FundraisingSummaryNullableScalarRelationFilter, Prisma.FundraisingSummaryWhereInput> | null
+  fundingRounds?: Prisma.FundingRoundListRelationFilter
 }, "id" | "slug">
 
 export type CompanyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   linkedinUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   ashbyBoardName?: Prisma.SortOrderInput | Prisma.SortOrder
   careersPageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -306,6 +323,7 @@ export type CompanyScalarWhereWithAggregatesInput = {
   id?: Prisma.UuidWithAggregatesFilter<"Company"> | string
   name?: Prisma.StringWithAggregatesFilter<"Company"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Company"> | string
+  description?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   linkedinUrl?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   ashbyBoardName?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   careersPageUrl?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
@@ -321,6 +339,7 @@ export type CompanyCreateInput = {
   id?: string
   name: string
   slug: string
+  description?: string | null
   linkedinUrl?: string | null
   ashbyBoardName?: string | null
   careersPageUrl?: string | null
@@ -334,12 +353,15 @@ export type CompanyCreateInput = {
   newsArticles?: Prisma.NewsArticleCreateNestedManyWithoutCompanyInput
   scrapingRuns?: Prisma.ScrapingRunCreateNestedManyWithoutCompanyInput
   healthMetrics?: Prisma.CompanyHealthMetricCreateNestedManyWithoutCompanyInput
+  fundraisingSummary?: Prisma.FundraisingSummaryCreateNestedOneWithoutCompanyInput
+  fundingRounds?: Prisma.FundingRoundCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateInput = {
   id?: string
   name: string
   slug: string
+  description?: string | null
   linkedinUrl?: string | null
   ashbyBoardName?: string | null
   careersPageUrl?: string | null
@@ -353,12 +375,15 @@ export type CompanyUncheckedCreateInput = {
   newsArticles?: Prisma.NewsArticleUncheckedCreateNestedManyWithoutCompanyInput
   scrapingRuns?: Prisma.ScrapingRunUncheckedCreateNestedManyWithoutCompanyInput
   healthMetrics?: Prisma.CompanyHealthMetricUncheckedCreateNestedManyWithoutCompanyInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUncheckedCreateNestedOneWithoutCompanyInput
+  fundingRounds?: Prisma.FundingRoundUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -372,12 +397,15 @@ export type CompanyUpdateInput = {
   newsArticles?: Prisma.NewsArticleUpdateManyWithoutCompanyNestedInput
   scrapingRuns?: Prisma.ScrapingRunUpdateManyWithoutCompanyNestedInput
   healthMetrics?: Prisma.CompanyHealthMetricUpdateManyWithoutCompanyNestedInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUpdateOneWithoutCompanyNestedInput
+  fundingRounds?: Prisma.FundingRoundUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -391,12 +419,15 @@ export type CompanyUncheckedUpdateInput = {
   newsArticles?: Prisma.NewsArticleUncheckedUpdateManyWithoutCompanyNestedInput
   scrapingRuns?: Prisma.ScrapingRunUncheckedUpdateManyWithoutCompanyNestedInput
   healthMetrics?: Prisma.CompanyHealthMetricUncheckedUpdateManyWithoutCompanyNestedInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUncheckedUpdateOneWithoutCompanyNestedInput
+  fundingRounds?: Prisma.FundingRoundUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateManyInput = {
   id?: string
   name: string
   slug: string
+  description?: string | null
   linkedinUrl?: string | null
   ashbyBoardName?: string | null
   careersPageUrl?: string | null
@@ -412,6 +443,7 @@ export type CompanyUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -427,6 +459,7 @@ export type CompanyUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -442,6 +475,7 @@ export type CompanyCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   linkedinUrl?: Prisma.SortOrder
   ashbyBoardName?: Prisma.SortOrder
   careersPageUrl?: Prisma.SortOrder
@@ -457,6 +491,7 @@ export type CompanyMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   linkedinUrl?: Prisma.SortOrder
   ashbyBoardName?: Prisma.SortOrder
   careersPageUrl?: Prisma.SortOrder
@@ -471,6 +506,7 @@ export type CompanyMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   linkedinUrl?: Prisma.SortOrder
   ashbyBoardName?: Prisma.SortOrder
   careersPageUrl?: Prisma.SortOrder
@@ -554,10 +590,39 @@ export type CompanyUpdateOneRequiredWithoutHealthMetricsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutHealthMetricsInput, Prisma.CompanyUpdateWithoutHealthMetricsInput>, Prisma.CompanyUncheckedUpdateWithoutHealthMetricsInput>
 }
 
+export type CompanyCreateNestedOneWithoutFundraisingSummaryInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutFundraisingSummaryInput, Prisma.CompanyUncheckedCreateWithoutFundraisingSummaryInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutFundraisingSummaryInput
+  connect?: Prisma.CompanyWhereUniqueInput
+}
+
+export type CompanyUpdateOneRequiredWithoutFundraisingSummaryNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutFundraisingSummaryInput, Prisma.CompanyUncheckedCreateWithoutFundraisingSummaryInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutFundraisingSummaryInput
+  upsert?: Prisma.CompanyUpsertWithoutFundraisingSummaryInput
+  connect?: Prisma.CompanyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutFundraisingSummaryInput, Prisma.CompanyUpdateWithoutFundraisingSummaryInput>, Prisma.CompanyUncheckedUpdateWithoutFundraisingSummaryInput>
+}
+
+export type CompanyCreateNestedOneWithoutFundingRoundsInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutFundingRoundsInput, Prisma.CompanyUncheckedCreateWithoutFundingRoundsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutFundingRoundsInput
+  connect?: Prisma.CompanyWhereUniqueInput
+}
+
+export type CompanyUpdateOneRequiredWithoutFundingRoundsNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutFundingRoundsInput, Prisma.CompanyUncheckedCreateWithoutFundingRoundsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutFundingRoundsInput
+  upsert?: Prisma.CompanyUpsertWithoutFundingRoundsInput
+  connect?: Prisma.CompanyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutFundingRoundsInput, Prisma.CompanyUpdateWithoutFundingRoundsInput>, Prisma.CompanyUncheckedUpdateWithoutFundingRoundsInput>
+}
+
 export type CompanyCreateWithoutJobPostingsInput = {
   id?: string
   name: string
   slug: string
+  description?: string | null
   linkedinUrl?: string | null
   ashbyBoardName?: string | null
   careersPageUrl?: string | null
@@ -570,12 +635,15 @@ export type CompanyCreateWithoutJobPostingsInput = {
   newsArticles?: Prisma.NewsArticleCreateNestedManyWithoutCompanyInput
   scrapingRuns?: Prisma.ScrapingRunCreateNestedManyWithoutCompanyInput
   healthMetrics?: Prisma.CompanyHealthMetricCreateNestedManyWithoutCompanyInput
+  fundraisingSummary?: Prisma.FundraisingSummaryCreateNestedOneWithoutCompanyInput
+  fundingRounds?: Prisma.FundingRoundCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutJobPostingsInput = {
   id?: string
   name: string
   slug: string
+  description?: string | null
   linkedinUrl?: string | null
   ashbyBoardName?: string | null
   careersPageUrl?: string | null
@@ -588,6 +656,8 @@ export type CompanyUncheckedCreateWithoutJobPostingsInput = {
   newsArticles?: Prisma.NewsArticleUncheckedCreateNestedManyWithoutCompanyInput
   scrapingRuns?: Prisma.ScrapingRunUncheckedCreateNestedManyWithoutCompanyInput
   healthMetrics?: Prisma.CompanyHealthMetricUncheckedCreateNestedManyWithoutCompanyInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUncheckedCreateNestedOneWithoutCompanyInput
+  fundingRounds?: Prisma.FundingRoundUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutJobPostingsInput = {
@@ -610,6 +680,7 @@ export type CompanyUpdateWithoutJobPostingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -622,12 +693,15 @@ export type CompanyUpdateWithoutJobPostingsInput = {
   newsArticles?: Prisma.NewsArticleUpdateManyWithoutCompanyNestedInput
   scrapingRuns?: Prisma.ScrapingRunUpdateManyWithoutCompanyNestedInput
   healthMetrics?: Prisma.CompanyHealthMetricUpdateManyWithoutCompanyNestedInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUpdateOneWithoutCompanyNestedInput
+  fundingRounds?: Prisma.FundingRoundUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutJobPostingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -640,12 +714,15 @@ export type CompanyUncheckedUpdateWithoutJobPostingsInput = {
   newsArticles?: Prisma.NewsArticleUncheckedUpdateManyWithoutCompanyNestedInput
   scrapingRuns?: Prisma.ScrapingRunUncheckedUpdateManyWithoutCompanyNestedInput
   healthMetrics?: Prisma.CompanyHealthMetricUncheckedUpdateManyWithoutCompanyNestedInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUncheckedUpdateOneWithoutCompanyNestedInput
+  fundingRounds?: Prisma.FundingRoundUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutNewsArticlesInput = {
   id?: string
   name: string
   slug: string
+  description?: string | null
   linkedinUrl?: string | null
   ashbyBoardName?: string | null
   careersPageUrl?: string | null
@@ -658,12 +735,15 @@ export type CompanyCreateWithoutNewsArticlesInput = {
   jobPostings?: Prisma.JobPostingCreateNestedManyWithoutCompanyInput
   scrapingRuns?: Prisma.ScrapingRunCreateNestedManyWithoutCompanyInput
   healthMetrics?: Prisma.CompanyHealthMetricCreateNestedManyWithoutCompanyInput
+  fundraisingSummary?: Prisma.FundraisingSummaryCreateNestedOneWithoutCompanyInput
+  fundingRounds?: Prisma.FundingRoundCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutNewsArticlesInput = {
   id?: string
   name: string
   slug: string
+  description?: string | null
   linkedinUrl?: string | null
   ashbyBoardName?: string | null
   careersPageUrl?: string | null
@@ -676,6 +756,8 @@ export type CompanyUncheckedCreateWithoutNewsArticlesInput = {
   jobPostings?: Prisma.JobPostingUncheckedCreateNestedManyWithoutCompanyInput
   scrapingRuns?: Prisma.ScrapingRunUncheckedCreateNestedManyWithoutCompanyInput
   healthMetrics?: Prisma.CompanyHealthMetricUncheckedCreateNestedManyWithoutCompanyInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUncheckedCreateNestedOneWithoutCompanyInput
+  fundingRounds?: Prisma.FundingRoundUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutNewsArticlesInput = {
@@ -698,6 +780,7 @@ export type CompanyUpdateWithoutNewsArticlesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -710,12 +793,15 @@ export type CompanyUpdateWithoutNewsArticlesInput = {
   jobPostings?: Prisma.JobPostingUpdateManyWithoutCompanyNestedInput
   scrapingRuns?: Prisma.ScrapingRunUpdateManyWithoutCompanyNestedInput
   healthMetrics?: Prisma.CompanyHealthMetricUpdateManyWithoutCompanyNestedInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUpdateOneWithoutCompanyNestedInput
+  fundingRounds?: Prisma.FundingRoundUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutNewsArticlesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -728,12 +814,15 @@ export type CompanyUncheckedUpdateWithoutNewsArticlesInput = {
   jobPostings?: Prisma.JobPostingUncheckedUpdateManyWithoutCompanyNestedInput
   scrapingRuns?: Prisma.ScrapingRunUncheckedUpdateManyWithoutCompanyNestedInput
   healthMetrics?: Prisma.CompanyHealthMetricUncheckedUpdateManyWithoutCompanyNestedInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUncheckedUpdateOneWithoutCompanyNestedInput
+  fundingRounds?: Prisma.FundingRoundUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutScrapingRunsInput = {
   id?: string
   name: string
   slug: string
+  description?: string | null
   linkedinUrl?: string | null
   ashbyBoardName?: string | null
   careersPageUrl?: string | null
@@ -746,12 +835,15 @@ export type CompanyCreateWithoutScrapingRunsInput = {
   jobPostings?: Prisma.JobPostingCreateNestedManyWithoutCompanyInput
   newsArticles?: Prisma.NewsArticleCreateNestedManyWithoutCompanyInput
   healthMetrics?: Prisma.CompanyHealthMetricCreateNestedManyWithoutCompanyInput
+  fundraisingSummary?: Prisma.FundraisingSummaryCreateNestedOneWithoutCompanyInput
+  fundingRounds?: Prisma.FundingRoundCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutScrapingRunsInput = {
   id?: string
   name: string
   slug: string
+  description?: string | null
   linkedinUrl?: string | null
   ashbyBoardName?: string | null
   careersPageUrl?: string | null
@@ -764,6 +856,8 @@ export type CompanyUncheckedCreateWithoutScrapingRunsInput = {
   jobPostings?: Prisma.JobPostingUncheckedCreateNestedManyWithoutCompanyInput
   newsArticles?: Prisma.NewsArticleUncheckedCreateNestedManyWithoutCompanyInput
   healthMetrics?: Prisma.CompanyHealthMetricUncheckedCreateNestedManyWithoutCompanyInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUncheckedCreateNestedOneWithoutCompanyInput
+  fundingRounds?: Prisma.FundingRoundUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutScrapingRunsInput = {
@@ -786,6 +880,7 @@ export type CompanyUpdateWithoutScrapingRunsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -798,12 +893,15 @@ export type CompanyUpdateWithoutScrapingRunsInput = {
   jobPostings?: Prisma.JobPostingUpdateManyWithoutCompanyNestedInput
   newsArticles?: Prisma.NewsArticleUpdateManyWithoutCompanyNestedInput
   healthMetrics?: Prisma.CompanyHealthMetricUpdateManyWithoutCompanyNestedInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUpdateOneWithoutCompanyNestedInput
+  fundingRounds?: Prisma.FundingRoundUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutScrapingRunsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -816,12 +914,15 @@ export type CompanyUncheckedUpdateWithoutScrapingRunsInput = {
   jobPostings?: Prisma.JobPostingUncheckedUpdateManyWithoutCompanyNestedInput
   newsArticles?: Prisma.NewsArticleUncheckedUpdateManyWithoutCompanyNestedInput
   healthMetrics?: Prisma.CompanyHealthMetricUncheckedUpdateManyWithoutCompanyNestedInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUncheckedUpdateOneWithoutCompanyNestedInput
+  fundingRounds?: Prisma.FundingRoundUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutHealthMetricsInput = {
   id?: string
   name: string
   slug: string
+  description?: string | null
   linkedinUrl?: string | null
   ashbyBoardName?: string | null
   careersPageUrl?: string | null
@@ -834,12 +935,15 @@ export type CompanyCreateWithoutHealthMetricsInput = {
   jobPostings?: Prisma.JobPostingCreateNestedManyWithoutCompanyInput
   newsArticles?: Prisma.NewsArticleCreateNestedManyWithoutCompanyInput
   scrapingRuns?: Prisma.ScrapingRunCreateNestedManyWithoutCompanyInput
+  fundraisingSummary?: Prisma.FundraisingSummaryCreateNestedOneWithoutCompanyInput
+  fundingRounds?: Prisma.FundingRoundCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutHealthMetricsInput = {
   id?: string
   name: string
   slug: string
+  description?: string | null
   linkedinUrl?: string | null
   ashbyBoardName?: string | null
   careersPageUrl?: string | null
@@ -852,6 +956,8 @@ export type CompanyUncheckedCreateWithoutHealthMetricsInput = {
   jobPostings?: Prisma.JobPostingUncheckedCreateNestedManyWithoutCompanyInput
   newsArticles?: Prisma.NewsArticleUncheckedCreateNestedManyWithoutCompanyInput
   scrapingRuns?: Prisma.ScrapingRunUncheckedCreateNestedManyWithoutCompanyInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUncheckedCreateNestedOneWithoutCompanyInput
+  fundingRounds?: Prisma.FundingRoundUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutHealthMetricsInput = {
@@ -874,6 +980,7 @@ export type CompanyUpdateWithoutHealthMetricsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -886,12 +993,15 @@ export type CompanyUpdateWithoutHealthMetricsInput = {
   jobPostings?: Prisma.JobPostingUpdateManyWithoutCompanyNestedInput
   newsArticles?: Prisma.NewsArticleUpdateManyWithoutCompanyNestedInput
   scrapingRuns?: Prisma.ScrapingRunUpdateManyWithoutCompanyNestedInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUpdateOneWithoutCompanyNestedInput
+  fundingRounds?: Prisma.FundingRoundUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutHealthMetricsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -904,6 +1014,208 @@ export type CompanyUncheckedUpdateWithoutHealthMetricsInput = {
   jobPostings?: Prisma.JobPostingUncheckedUpdateManyWithoutCompanyNestedInput
   newsArticles?: Prisma.NewsArticleUncheckedUpdateManyWithoutCompanyNestedInput
   scrapingRuns?: Prisma.ScrapingRunUncheckedUpdateManyWithoutCompanyNestedInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUncheckedUpdateOneWithoutCompanyNestedInput
+  fundingRounds?: Prisma.FundingRoundUncheckedUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyCreateWithoutFundraisingSummaryInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  linkedinUrl?: string | null
+  ashbyBoardName?: string | null
+  careersPageUrl?: string | null
+  industry?: string | null
+  companySize?: string | null
+  headquartersLocation?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  jobPostings?: Prisma.JobPostingCreateNestedManyWithoutCompanyInput
+  newsArticles?: Prisma.NewsArticleCreateNestedManyWithoutCompanyInput
+  scrapingRuns?: Prisma.ScrapingRunCreateNestedManyWithoutCompanyInput
+  healthMetrics?: Prisma.CompanyHealthMetricCreateNestedManyWithoutCompanyInput
+  fundingRounds?: Prisma.FundingRoundCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutFundraisingSummaryInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  linkedinUrl?: string | null
+  ashbyBoardName?: string | null
+  careersPageUrl?: string | null
+  industry?: string | null
+  companySize?: string | null
+  headquartersLocation?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  jobPostings?: Prisma.JobPostingUncheckedCreateNestedManyWithoutCompanyInput
+  newsArticles?: Prisma.NewsArticleUncheckedCreateNestedManyWithoutCompanyInput
+  scrapingRuns?: Prisma.ScrapingRunUncheckedCreateNestedManyWithoutCompanyInput
+  healthMetrics?: Prisma.CompanyHealthMetricUncheckedCreateNestedManyWithoutCompanyInput
+  fundingRounds?: Prisma.FundingRoundUncheckedCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutFundraisingSummaryInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutFundraisingSummaryInput, Prisma.CompanyUncheckedCreateWithoutFundraisingSummaryInput>
+}
+
+export type CompanyUpsertWithoutFundraisingSummaryInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutFundraisingSummaryInput, Prisma.CompanyUncheckedUpdateWithoutFundraisingSummaryInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutFundraisingSummaryInput, Prisma.CompanyUncheckedCreateWithoutFundraisingSummaryInput>
+  where?: Prisma.CompanyWhereInput
+}
+
+export type CompanyUpdateToOneWithWhereWithoutFundraisingSummaryInput = {
+  where?: Prisma.CompanyWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutFundraisingSummaryInput, Prisma.CompanyUncheckedUpdateWithoutFundraisingSummaryInput>
+}
+
+export type CompanyUpdateWithoutFundraisingSummaryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companySize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  headquartersLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  jobPostings?: Prisma.JobPostingUpdateManyWithoutCompanyNestedInput
+  newsArticles?: Prisma.NewsArticleUpdateManyWithoutCompanyNestedInput
+  scrapingRuns?: Prisma.ScrapingRunUpdateManyWithoutCompanyNestedInput
+  healthMetrics?: Prisma.CompanyHealthMetricUpdateManyWithoutCompanyNestedInput
+  fundingRounds?: Prisma.FundingRoundUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutFundraisingSummaryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companySize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  headquartersLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  jobPostings?: Prisma.JobPostingUncheckedUpdateManyWithoutCompanyNestedInput
+  newsArticles?: Prisma.NewsArticleUncheckedUpdateManyWithoutCompanyNestedInput
+  scrapingRuns?: Prisma.ScrapingRunUncheckedUpdateManyWithoutCompanyNestedInput
+  healthMetrics?: Prisma.CompanyHealthMetricUncheckedUpdateManyWithoutCompanyNestedInput
+  fundingRounds?: Prisma.FundingRoundUncheckedUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyCreateWithoutFundingRoundsInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  linkedinUrl?: string | null
+  ashbyBoardName?: string | null
+  careersPageUrl?: string | null
+  industry?: string | null
+  companySize?: string | null
+  headquartersLocation?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  jobPostings?: Prisma.JobPostingCreateNestedManyWithoutCompanyInput
+  newsArticles?: Prisma.NewsArticleCreateNestedManyWithoutCompanyInput
+  scrapingRuns?: Prisma.ScrapingRunCreateNestedManyWithoutCompanyInput
+  healthMetrics?: Prisma.CompanyHealthMetricCreateNestedManyWithoutCompanyInput
+  fundraisingSummary?: Prisma.FundraisingSummaryCreateNestedOneWithoutCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutFundingRoundsInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  linkedinUrl?: string | null
+  ashbyBoardName?: string | null
+  careersPageUrl?: string | null
+  industry?: string | null
+  companySize?: string | null
+  headquartersLocation?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  jobPostings?: Prisma.JobPostingUncheckedCreateNestedManyWithoutCompanyInput
+  newsArticles?: Prisma.NewsArticleUncheckedCreateNestedManyWithoutCompanyInput
+  scrapingRuns?: Prisma.ScrapingRunUncheckedCreateNestedManyWithoutCompanyInput
+  healthMetrics?: Prisma.CompanyHealthMetricUncheckedCreateNestedManyWithoutCompanyInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUncheckedCreateNestedOneWithoutCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutFundingRoundsInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutFundingRoundsInput, Prisma.CompanyUncheckedCreateWithoutFundingRoundsInput>
+}
+
+export type CompanyUpsertWithoutFundingRoundsInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutFundingRoundsInput, Prisma.CompanyUncheckedUpdateWithoutFundingRoundsInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutFundingRoundsInput, Prisma.CompanyUncheckedCreateWithoutFundingRoundsInput>
+  where?: Prisma.CompanyWhereInput
+}
+
+export type CompanyUpdateToOneWithWhereWithoutFundingRoundsInput = {
+  where?: Prisma.CompanyWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutFundingRoundsInput, Prisma.CompanyUncheckedUpdateWithoutFundingRoundsInput>
+}
+
+export type CompanyUpdateWithoutFundingRoundsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companySize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  headquartersLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  jobPostings?: Prisma.JobPostingUpdateManyWithoutCompanyNestedInput
+  newsArticles?: Prisma.NewsArticleUpdateManyWithoutCompanyNestedInput
+  scrapingRuns?: Prisma.ScrapingRunUpdateManyWithoutCompanyNestedInput
+  healthMetrics?: Prisma.CompanyHealthMetricUpdateManyWithoutCompanyNestedInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUpdateOneWithoutCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutFundingRoundsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ashbyBoardName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  careersPageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companySize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  headquartersLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  jobPostings?: Prisma.JobPostingUncheckedUpdateManyWithoutCompanyNestedInput
+  newsArticles?: Prisma.NewsArticleUncheckedUpdateManyWithoutCompanyNestedInput
+  scrapingRuns?: Prisma.ScrapingRunUncheckedUpdateManyWithoutCompanyNestedInput
+  healthMetrics?: Prisma.CompanyHealthMetricUncheckedUpdateManyWithoutCompanyNestedInput
+  fundraisingSummary?: Prisma.FundraisingSummaryUncheckedUpdateOneWithoutCompanyNestedInput
 }
 
 
@@ -916,6 +1228,7 @@ export type CompanyCountOutputType = {
   newsArticles: number
   scrapingRuns: number
   healthMetrics: number
+  fundingRounds: number
 }
 
 export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -923,6 +1236,7 @@ export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   newsArticles?: boolean | CompanyCountOutputTypeCountNewsArticlesArgs
   scrapingRuns?: boolean | CompanyCountOutputTypeCountScrapingRunsArgs
   healthMetrics?: boolean | CompanyCountOutputTypeCountHealthMetricsArgs
+  fundingRounds?: boolean | CompanyCountOutputTypeCountFundingRoundsArgs
 }
 
 /**
@@ -963,11 +1277,19 @@ export type CompanyCountOutputTypeCountHealthMetricsArgs<ExtArgs extends runtime
   where?: Prisma.CompanyHealthMetricWhereInput
 }
 
+/**
+ * CompanyCountOutputType without action
+ */
+export type CompanyCountOutputTypeCountFundingRoundsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FundingRoundWhereInput
+}
+
 
 export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   slug?: boolean
+  description?: boolean
   linkedinUrl?: boolean
   ashbyBoardName?: boolean
   careersPageUrl?: boolean
@@ -981,6 +1303,8 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   newsArticles?: boolean | Prisma.Company$newsArticlesArgs<ExtArgs>
   scrapingRuns?: boolean | Prisma.Company$scrapingRunsArgs<ExtArgs>
   healthMetrics?: boolean | Prisma.Company$healthMetricsArgs<ExtArgs>
+  fundraisingSummary?: boolean | Prisma.Company$fundraisingSummaryArgs<ExtArgs>
+  fundingRounds?: boolean | Prisma.Company$fundingRoundsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["company"]>
 
@@ -988,6 +1312,7 @@ export type CompanySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   name?: boolean
   slug?: boolean
+  description?: boolean
   linkedinUrl?: boolean
   ashbyBoardName?: boolean
   careersPageUrl?: boolean
@@ -1003,6 +1328,7 @@ export type CompanySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   name?: boolean
   slug?: boolean
+  description?: boolean
   linkedinUrl?: boolean
   ashbyBoardName?: boolean
   careersPageUrl?: boolean
@@ -1018,6 +1344,7 @@ export type CompanySelectScalar = {
   id?: boolean
   name?: boolean
   slug?: boolean
+  description?: boolean
   linkedinUrl?: boolean
   ashbyBoardName?: boolean
   careersPageUrl?: boolean
@@ -1029,12 +1356,14 @@ export type CompanySelectScalar = {
   metadata?: boolean
 }
 
-export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "linkedinUrl" | "ashbyBoardName" | "careersPageUrl" | "industry" | "companySize" | "headquartersLocation" | "createdAt" | "updatedAt" | "metadata", ExtArgs["result"]["company"]>
+export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "linkedinUrl" | "ashbyBoardName" | "careersPageUrl" | "industry" | "companySize" | "headquartersLocation" | "createdAt" | "updatedAt" | "metadata", ExtArgs["result"]["company"]>
 export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   jobPostings?: boolean | Prisma.Company$jobPostingsArgs<ExtArgs>
   newsArticles?: boolean | Prisma.Company$newsArticlesArgs<ExtArgs>
   scrapingRuns?: boolean | Prisma.Company$scrapingRunsArgs<ExtArgs>
   healthMetrics?: boolean | Prisma.Company$healthMetricsArgs<ExtArgs>
+  fundraisingSummary?: boolean | Prisma.Company$fundraisingSummaryArgs<ExtArgs>
+  fundingRounds?: boolean | Prisma.Company$fundingRoundsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CompanyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1047,11 +1376,14 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     newsArticles: Prisma.$NewsArticlePayload<ExtArgs>[]
     scrapingRuns: Prisma.$ScrapingRunPayload<ExtArgs>[]
     healthMetrics: Prisma.$CompanyHealthMetricPayload<ExtArgs>[]
+    fundraisingSummary: Prisma.$FundraisingSummaryPayload<ExtArgs> | null
+    fundingRounds: Prisma.$FundingRoundPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
     slug: string
+    description: string | null
     linkedinUrl: string | null
     ashbyBoardName: string | null
     careersPageUrl: string | null
@@ -1459,6 +1791,8 @@ export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends runtime.
   newsArticles<T extends Prisma.Company$newsArticlesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$newsArticlesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   scrapingRuns<T extends Prisma.Company$scrapingRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$scrapingRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScrapingRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   healthMetrics<T extends Prisma.Company$healthMetricsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$healthMetricsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyHealthMetricPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  fundraisingSummary<T extends Prisma.Company$fundraisingSummaryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$fundraisingSummaryArgs<ExtArgs>>): Prisma.Prisma__FundraisingSummaryClient<runtime.Types.Result.GetResult<Prisma.$FundraisingSummaryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  fundingRounds<T extends Prisma.Company$fundingRoundsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$fundingRoundsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FundingRoundPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1491,6 +1825,7 @@ export interface CompanyFieldRefs {
   readonly id: Prisma.FieldRef<"Company", 'String'>
   readonly name: Prisma.FieldRef<"Company", 'String'>
   readonly slug: Prisma.FieldRef<"Company", 'String'>
+  readonly description: Prisma.FieldRef<"Company", 'String'>
   readonly linkedinUrl: Prisma.FieldRef<"Company", 'String'>
   readonly ashbyBoardName: Prisma.FieldRef<"Company", 'String'>
   readonly careersPageUrl: Prisma.FieldRef<"Company", 'String'>
@@ -1981,6 +2316,49 @@ export type Company$healthMetricsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.CompanyHealthMetricScalarFieldEnum | Prisma.CompanyHealthMetricScalarFieldEnum[]
+}
+
+/**
+ * Company.fundraisingSummary
+ */
+export type Company$fundraisingSummaryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FundraisingSummary
+   */
+  select?: Prisma.FundraisingSummarySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FundraisingSummary
+   */
+  omit?: Prisma.FundraisingSummaryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FundraisingSummaryInclude<ExtArgs> | null
+  where?: Prisma.FundraisingSummaryWhereInput
+}
+
+/**
+ * Company.fundingRounds
+ */
+export type Company$fundingRoundsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FundingRound
+   */
+  select?: Prisma.FundingRoundSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FundingRound
+   */
+  omit?: Prisma.FundingRoundOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FundingRoundInclude<ExtArgs> | null
+  where?: Prisma.FundingRoundWhereInput
+  orderBy?: Prisma.FundingRoundOrderByWithRelationInput | Prisma.FundingRoundOrderByWithRelationInput[]
+  cursor?: Prisma.FundingRoundWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FundingRoundScalarFieldEnum | Prisma.FundingRoundScalarFieldEnum[]
 }
 
 /**

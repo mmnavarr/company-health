@@ -12,6 +12,7 @@ model Company {
   id                    String   @id @default(uuid()) @db.Uuid
   name                  String   @db.VarChar(255)
   slug                  String   @unique @db.VarChar(255)
+  description           String?  @db.Text
   linkedinUrl           String?  @map("linkedin_url") @db.VarChar(500)
   ashbyBoardName        String?  @map("ashby_board_name") @db.VarChar(500)
   careersPageUrl        String?  @map("careers_page_url") @db.VarChar(500)
@@ -22,10 +23,12 @@ model Company {
   updatedAt             DateTime @updatedAt @map("updated_at")
   metadata              Json?
 
-  jobPostings    JobPosting[]
-  newsArticles   NewsArticle[]
-  scrapingRuns   ScrapingRun[]
-  healthMetrics  CompanyHealthMetric[]
+  jobPostings       JobPosting[]
+  newsArticles      NewsArticle[]
+  scrapingRuns      ScrapingRun[]
+  healthMetrics     CompanyHealthMetric[]
+  fundraisingSummary FundraisingSummary?
+  fundingRounds     FundingRound[]
 
   @@index([name])
   @@map("companies")
@@ -148,4 +151,61 @@ model CompanyHealthMetric {
   @@index([companyId])
   @@index([metricDate])
   @@map("company_health_metrics")
+}
+
+/// Fundraising Summary — aggregated fundraising data for a company
+model FundraisingSummary {
+  id                String   @id @default(uuid()) @db.Uuid
+  companyId         String   @map("company_id") @db.Uuid
+  totalRaised       Decimal? @map("total_raised") @db.Decimal(15, 2)
+  totalRaisedCcy    String?  @map("total_raised_ccy") @db.VarChar(3)
+  latestValuation   Decimal? @map("latest_valuation") @db.Decimal(15, 2)
+  valuationCcy      String?  @map("valuation_ccy") @db.VarChar(3)
+  roundCount        Int      @default(0) @map("round_count")
+  investorCount     Int      @default(0) @map("investor_count")
+  lastFundingDate   DateTime? @map("last_funding_date")
+  lastScrapedAt     DateTime? @map("last_scraped_at")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  fundingRounds FundingRound[]
+
+  @@unique([companyId])
+  @@index([companyId])
+  @@map("fundraising_summaries")
+}
+
+/// Funding Round — individual funding round
+model FundingRound {
+  id              String    @id @default(uuid()) @db.Uuid
+  companyId       String    @map("company_id") @db.Uuid
+  summaryId       String    @map("summary_id") @db.Uuid
+  roundType       String    @map("round_type") @db.VarChar(50)
+  amount          Decimal?  @db.Decimal(15, 2)
+  amountCcy       String?   @map("amount_ccy") @db.VarChar(3)
+  announcedDate   DateTime? @map("announced_date")
+  investors       String[]  @db.VarChar(255)
+  leadInvestors   String[]  @map("lead_investors") @db.VarChar(255)
+  valuation       Decimal?  @db.Decimal(15, 2)
+  valuationCcy    String?   @map("valuation_ccy") @db.VarChar(3)
+  sourceUrl       String    @map("source_url") @db.VarChar(2000)
+  sourceTitle     String    @map("source_title") @db.VarChar(1000)
+  rawContent      String?   @map("raw_content") @db.Text
+  extractedData   Json?     @map("extracted_data")
+  confidenceScore Decimal?  @map("confidence_score") @db.Decimal(3, 2)
+  firstSeenAt     DateTime  @map("first_seen_at")
+  lastSeenAt      DateTime  @map("last_seen_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  company  Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  summary  FundraisingSummary @relation(fields: [summaryId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, sourceUrl])
+  @@index([companyId])
+  @@index([summaryId])
+  @@index([announcedDate])
+  @@index([roundType])
+  @@map("funding_rounds")
 }

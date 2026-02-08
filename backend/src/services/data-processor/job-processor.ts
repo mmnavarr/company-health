@@ -119,8 +119,8 @@ export class JobProcessingService {
         publishedAt: job.publishedAt ? new Date(job.publishedAt) : null,
         jobUrl: job.jobUrl ?? null,
         applyUrl: job.applyUrl ?? null,
-        compensation: (job.compensation as unknown) ?? null,
-        secondaryLocations: (job.secondaryLocations as unknown) ?? null,
+        compensation: job.compensation ? JSON.parse(JSON.stringify(job.compensation)) : null,
+        secondaryLocations: job.secondaryLocations ? JSON.parse(JSON.stringify(job.secondaryLocations)) : null,
         lastSeenAt: now,
         source: "ashby",
         sourceUrl,
@@ -133,8 +133,9 @@ export class JobProcessingService {
         metadata: null,
       };
 
-      if (existingByExternalId.get(job.id)) {
-        updateOps.push(jobData);
+      const existing = existingByExternalId.get(job.id);
+      if (existing) {
+        updateOps.push({ ...jobData, id: existing.id });
       } else {
         createOps.push(jobData as JobPostingCreateManyInput);
       }
@@ -148,13 +149,34 @@ export class JobProcessingService {
 
     // --- Step 4: Execute updates ---
     if (updateOps.length > 0) {
-      this.log.debug(`Updated ${updateOps.length} existing jobs`);
-      await prisma.jobPosting.updateMany({
-        where: {
-          id: { in: updateOps.map((j) => j.id) },
-        },
-        data: updateOps,
-      });
+      this.log.debug(`Updating ${updateOps.length} existing jobs`);
+      // Having issues wih updateMany, moving on but this is not ideal as an O(n) db operation
+      for (const job of updateOps) {
+        await prisma.jobPosting.update({
+          where: { id: job.id },
+          data: {
+            title: job.title,
+            description: job.description,
+            descriptionHtml: job.descriptionHtml,
+            location: job.location,
+            remoteType: job.remoteType,
+            isRemote: job.isRemote,
+            employmentType: job.employmentType,
+            seniorityLevel: job.seniorityLevel,
+            department: job.department,
+            team: job.team,
+            descriptionHash: job.descriptionHash,
+            publishedAt: job.publishedAt,
+            jobUrl: job.jobUrl,
+            applyUrl: job.applyUrl,
+            compensation: job.compensation ? JSON.parse(JSON.stringify(job.compensation)) : undefined,
+            secondaryLocations: job.secondaryLocations ? JSON.parse(JSON.stringify(job.secondaryLocations)) : undefined,
+            lastSeenAt: job.lastSeenAt,
+            removedAt: null,
+          },
+          select: { id: true },
+        });
+      }
     }
 
     // --- Step 5: Execute deletes ---

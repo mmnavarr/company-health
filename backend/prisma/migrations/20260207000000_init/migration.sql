@@ -13,8 +13,7 @@ CREATE TABLE "companies" (
     "updated_at" TIMESTAMP(3) NOT NULL,
     "metadata" JSONB,
 
-    CONSTRAINT "companies_pkey" PRIMARY KEY ("id"),
-    
+    CONSTRAINT "companies_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable

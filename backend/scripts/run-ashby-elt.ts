@@ -9,12 +9,17 @@ import { AshbyELTJob } from "../src/jobs/ashby-elt";
 const companySlug = process.argv[2] ?? "rain";
 
 async function main() {
+  console.log(`Starting Ashby Jobs ELT pipeline for company: ${companySlug}`);
+  console.log("=".repeat(50));
+
   try {
     const job = new AshbyELTJob();
-    const result = await job.run({ companySlug });
-    console.log("Result:", result);
+    await job.run({ companySlug });
+
+    console.log("\nPipeline completed successfully!");
+    console.log("=".repeat(50));
   } catch (error) {
-    console.error("Error:", error);
+    console.error("\nPipeline failed:", error);
     process.exit(1);
   }
 }

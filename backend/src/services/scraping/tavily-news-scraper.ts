@@ -35,9 +35,11 @@ export class TavilyNewsScrapingService implements ScrapingService {
    * @returns Array of news results
    */
   async scrape<TavilyNewsResponse>(
-    companyName: string
+    companyName: string,
+    description?: string
   ): Promise<TavilyNewsResponse> {
-    const query = `"${companyName}" company news`;
+    const context = description ? ` (${description})` : "";
+    const query = `"${companyName}"${context} company news`;
 
     const response = await this.client.search(query, {
       searchDepth: "advanced",

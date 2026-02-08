@@ -55,7 +55,9 @@ export const ModelName = {
   JobPosting: 'JobPosting',
   NewsArticle: 'NewsArticle',
   ScrapingRun: 'ScrapingRun',
-  CompanyHealthMetric: 'CompanyHealthMetric'
+  CompanyHealthMetric: 'CompanyHealthMetric',
+  FundraisingSummary: 'FundraisingSummary',
+  FundingRound: 'FundingRound'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -78,6 +80,7 @@ export const CompanyScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
+  description: 'description',
   linkedinUrl: 'linkedinUrl',
   ashbyBoardName: 'ashbyBoardName',
   careersPageUrl: 'careersPageUrl',
@@ -185,6 +188,50 @@ export const CompanyHealthMetricScalarFieldEnum = {
 } as const
 
 export type CompanyHealthMetricScalarFieldEnum = (typeof CompanyHealthMetricScalarFieldEnum)[keyof typeof CompanyHealthMetricScalarFieldEnum]
+
+
+export const FundraisingSummaryScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  totalRaised: 'totalRaised',
+  totalRaisedCcy: 'totalRaisedCcy',
+  latestValuation: 'latestValuation',
+  valuationCcy: 'valuationCcy',
+  roundCount: 'roundCount',
+  investorCount: 'investorCount',
+  lastFundingDate: 'lastFundingDate',
+  lastScrapedAt: 'lastScrapedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FundraisingSummaryScalarFieldEnum = (typeof FundraisingSummaryScalarFieldEnum)[keyof typeof FundraisingSummaryScalarFieldEnum]
+
+
+export const FundingRoundScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  summaryId: 'summaryId',
+  roundType: 'roundType',
+  amount: 'amount',
+  amountCcy: 'amountCcy',
+  announcedDate: 'announcedDate',
+  investors: 'investors',
+  leadInvestors: 'leadInvestors',
+  valuation: 'valuation',
+  valuationCcy: 'valuationCcy',
+  sourceUrl: 'sourceUrl',
+  sourceTitle: 'sourceTitle',
+  rawContent: 'rawContent',
+  extractedData: 'extractedData',
+  confidenceScore: 'confidenceScore',
+  firstSeenAt: 'firstSeenAt',
+  lastSeenAt: 'lastSeenAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FundingRoundScalarFieldEnum = (typeof FundingRoundScalarFieldEnum)[keyof typeof FundingRoundScalarFieldEnum]
 
 
 export const SortOrder = {

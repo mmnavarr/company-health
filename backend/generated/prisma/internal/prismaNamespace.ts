@@ -388,7 +388,9 @@ export const ModelName = {
   JobPosting: 'JobPosting',
   NewsArticle: 'NewsArticle',
   ScrapingRun: 'ScrapingRun',
-  CompanyHealthMetric: 'CompanyHealthMetric'
+  CompanyHealthMetric: 'CompanyHealthMetric',
+  FundraisingSummary: 'FundraisingSummary',
+  FundingRound: 'FundingRound'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -404,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "jobPosting" | "newsArticle" | "scrapingRun" | "companyHealthMetric"
+    modelProps: "company" | "jobPosting" | "newsArticle" | "scrapingRun" | "companyHealthMetric" | "fundraisingSummary" | "fundingRound"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -778,6 +780,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    FundraisingSummary: {
+      payload: Prisma.$FundraisingSummaryPayload<ExtArgs>
+      fields: Prisma.FundraisingSummaryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FundraisingSummaryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundraisingSummaryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FundraisingSummaryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundraisingSummaryPayload>
+        }
+        findFirst: {
+          args: Prisma.FundraisingSummaryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundraisingSummaryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FundraisingSummaryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundraisingSummaryPayload>
+        }
+        findMany: {
+          args: Prisma.FundraisingSummaryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundraisingSummaryPayload>[]
+        }
+        create: {
+          args: Prisma.FundraisingSummaryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundraisingSummaryPayload>
+        }
+        createMany: {
+          args: Prisma.FundraisingSummaryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FundraisingSummaryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundraisingSummaryPayload>[]
+        }
+        delete: {
+          args: Prisma.FundraisingSummaryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundraisingSummaryPayload>
+        }
+        update: {
+          args: Prisma.FundraisingSummaryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundraisingSummaryPayload>
+        }
+        deleteMany: {
+          args: Prisma.FundraisingSummaryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FundraisingSummaryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FundraisingSummaryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundraisingSummaryPayload>[]
+        }
+        upsert: {
+          args: Prisma.FundraisingSummaryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundraisingSummaryPayload>
+        }
+        aggregate: {
+          args: Prisma.FundraisingSummaryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFundraisingSummary>
+        }
+        groupBy: {
+          args: Prisma.FundraisingSummaryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FundraisingSummaryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FundraisingSummaryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FundraisingSummaryCountAggregateOutputType> | number
+        }
+      }
+    }
+    FundingRound: {
+      payload: Prisma.$FundingRoundPayload<ExtArgs>
+      fields: Prisma.FundingRoundFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FundingRoundFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundingRoundPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FundingRoundFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundingRoundPayload>
+        }
+        findFirst: {
+          args: Prisma.FundingRoundFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundingRoundPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FundingRoundFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundingRoundPayload>
+        }
+        findMany: {
+          args: Prisma.FundingRoundFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundingRoundPayload>[]
+        }
+        create: {
+          args: Prisma.FundingRoundCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundingRoundPayload>
+        }
+        createMany: {
+          args: Prisma.FundingRoundCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FundingRoundCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundingRoundPayload>[]
+        }
+        delete: {
+          args: Prisma.FundingRoundDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundingRoundPayload>
+        }
+        update: {
+          args: Prisma.FundingRoundUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundingRoundPayload>
+        }
+        deleteMany: {
+          args: Prisma.FundingRoundDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FundingRoundUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FundingRoundUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundingRoundPayload>[]
+        }
+        upsert: {
+          args: Prisma.FundingRoundUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FundingRoundPayload>
+        }
+        aggregate: {
+          args: Prisma.FundingRoundAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFundingRound>
+        }
+        groupBy: {
+          args: Prisma.FundingRoundGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FundingRoundGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FundingRoundCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FundingRoundCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -821,6 +971,7 @@ export const CompanyScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
+  description: 'description',
   linkedinUrl: 'linkedinUrl',
   ashbyBoardName: 'ashbyBoardName',
   careersPageUrl: 'careersPageUrl',
@@ -928,6 +1079,50 @@ export const CompanyHealthMetricScalarFieldEnum = {
 } as const
 
 export type CompanyHealthMetricScalarFieldEnum = (typeof CompanyHealthMetricScalarFieldEnum)[keyof typeof CompanyHealthMetricScalarFieldEnum]
+
+
+export const FundraisingSummaryScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  totalRaised: 'totalRaised',
+  totalRaisedCcy: 'totalRaisedCcy',
+  latestValuation: 'latestValuation',
+  valuationCcy: 'valuationCcy',
+  roundCount: 'roundCount',
+  investorCount: 'investorCount',
+  lastFundingDate: 'lastFundingDate',
+  lastScrapedAt: 'lastScrapedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FundraisingSummaryScalarFieldEnum = (typeof FundraisingSummaryScalarFieldEnum)[keyof typeof FundraisingSummaryScalarFieldEnum]
+
+
+export const FundingRoundScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  summaryId: 'summaryId',
+  roundType: 'roundType',
+  amount: 'amount',
+  amountCcy: 'amountCcy',
+  announcedDate: 'announcedDate',
+  investors: 'investors',
+  leadInvestors: 'leadInvestors',
+  valuation: 'valuation',
+  valuationCcy: 'valuationCcy',
+  sourceUrl: 'sourceUrl',
+  sourceTitle: 'sourceTitle',
+  rawContent: 'rawContent',
+  extractedData: 'extractedData',
+  confidenceScore: 'confidenceScore',
+  firstSeenAt: 'firstSeenAt',
+  lastSeenAt: 'lastSeenAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FundingRoundScalarFieldEnum = (typeof FundingRoundScalarFieldEnum)[keyof typeof FundingRoundScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1167,6 +1362,8 @@ export type GlobalOmitConfig = {
   newsArticle?: Prisma.NewsArticleOmit
   scrapingRun?: Prisma.ScrapingRunOmit
   companyHealthMetric?: Prisma.CompanyHealthMetricOmit
+  fundraisingSummary?: Prisma.FundraisingSummaryOmit
+  fundingRound?: Prisma.FundingRoundOmit
 }
 
 /* Types for Logging */

@@ -14,7 +14,8 @@
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev",
     "elt:ashby": "bun run scripts/run-ashby-elt.ts",
-    "elt:news": "bun run scripts/run-news-elt.ts"
+    "elt:news": "bun run scripts/run-news-elt.ts",
+    "elt:fundraising": "bun run scripts/run-fundraising-elt.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -32,6 +33,7 @@
     "@vercel/blob": "^2.2.0",
     "dotenv": "^17.2.4",
     "elysia": "^1.4.22",
+    "openai": "^6.18.0",
     "pg": "^8.18.0",
     "prisma": "^7.3.0",
     "tslog": "^4.10.2"

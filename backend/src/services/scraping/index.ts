@@ -14,4 +14,5 @@ export interface ScrapingService {
 
 export { AshbyScrapingService } from "./ashby-scraper";
 export { LinkedInScrapingService } from "./linkedin-scraper";
+export { TavilyFundingScrapingService } from "./tavily-funding-scraper";
 export { TavilyNewsScrapingService } from "./tavily-news-scraper";

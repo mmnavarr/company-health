@@ -59,7 +59,7 @@ export class NewsELTJob extends Job {
 
     // --- Layer 1: Extract (Scraping) ---
     const response =
-      await this.tavilyScrapingService.scrape<TavilyNewsResponse>(company.name);
+      await this.tavilyScrapingService.scrape<TavilyNewsResponse>(company.name, company?.description ?? undefined);
     const results = response.results;
     pipelineResult.articlesFound = results.length;
 

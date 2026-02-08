@@ -7,6 +7,7 @@ import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 import { companiesRoutes } from "./routes/companies";
 import { dashboardRoutes } from "./routes/dashboard";
+import { fundraisingRoutes } from "./routes/fundraising";
 import { jobsRoutes } from "./routes/jobs";
 import { newsRoutes } from "./routes/news";
 
@@ -32,7 +33,8 @@ export const app = new Elysia({ name: "company-health-api" })
   .use(companiesRoutes)
   .use(jobsRoutes)
   .use(dashboardRoutes)
-  .use(newsRoutes);
+  .use(newsRoutes)
+  .use(fundraisingRoutes);
 
 export type App = typeof app;
 
