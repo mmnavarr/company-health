@@ -3,7 +3,7 @@
  */
 
 import { tavily } from "@tavily/core";
-import type { Scraper } from ".";
+import type { ScrapingService } from ".";
 
 export interface TavilyNewsResult {
   title: string;
@@ -19,13 +19,14 @@ export interface TavilyNewsResponse {
   query: string;
 }
 
-export class TavilyNewsScraper implements Scraper {
+export class TavilyNewsScrapingService implements ScrapingService {
   private client: ReturnType<typeof tavily>;
 
-  constructor(apiKey?: string) {
-    this.client = tavily({
-      apiKey: apiKey ?? process.env.TAVILY_API_KEY,
-    });
+  constructor(apiKey: string) {
+    if (!apiKey) {
+      throw new Error("Tavily API key is required");
+    }
+    this.client = tavily({ apiKey });
   }
 
   /**

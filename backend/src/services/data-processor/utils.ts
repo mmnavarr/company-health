@@ -1,14 +1,11 @@
-/**
- * Data processing layer — TDD §5
- * Normalization, deduplication, change detection.
- */
-
-export { DataProcessor } from "./data-processor";
-
 /** Fields derived by normalization, to be written to job_postings */
+
+export type RemoteType = "Remote" | "Hybrid" | "Onsite";
+export type SeniorityLevel = "Intern" | "Entry" | "Mid" | "Senior" | "Staff" | "Executive";
+
 export interface NormalizedJobFields {
-  remoteType: string;
-  seniorityLevel: string;
+  remoteType: RemoteType;
+  seniorityLevel: SeniorityLevel;
 }
 
 // Pre-compiled regex patterns (top-level scope for performance)
@@ -34,36 +31,47 @@ export function normalizeJob(job: {
   };
 }
 
-function detectRemoteType(location?: string, title?: string): string {
+/**
+ * Detect the remote type from a job's location and title.
+ * @param location - The job location
+ * @param title - The job title
+ * @returns The remote type
+ */
+function detectRemoteType(location?: string, title?: string): RemoteType {
   const text = [location, title].filter(Boolean).join(" ").toLowerCase();
   if (REMOTE_RE.test(text)) {
-    return "remote";
+    return "Remote";
   }
   if (HYBRID_RE.test(text)) {
-    return "hybrid";
+    return "Hybrid";
   }
-  return "onsite";
+  return "Onsite";
 }
 
-function extractSeniority(title?: string): string {
+/**
+ * Extract seniority level from a job title.
+ * @param title - The job title
+ * @returns The seniority level
+ */
+function extractSeniority(title?: string): SeniorityLevel {
   if (!title) {
-    return "mid";
+    return "Mid";
   }
   const t = title.toLowerCase();
   if (INTERN_RE.test(t)) {
-    return "intern";
+    return "Intern";
   }
   if (ENTRY_RE.test(t)) {
-    return "entry";
+    return "Entry";
   }
   if (SENIOR_RE.test(t)) {
-    return "senior";
+    return "Senior";
   }
   if (STAFF_RE.test(t)) {
-    return "staff";
+    return "Staff";
   }
   if (EXEC_RE.test(t)) {
-    return "executive";
+    return "Executive";
   }
-  return "mid";
+  return "Mid";
 }

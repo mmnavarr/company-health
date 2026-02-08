@@ -6,8 +6,10 @@ if (!connectionString) {
   throw new Error("POSTGRES_URL_NON_POOLING is not set");
 }
 
+
 const adapter = new PrismaBun({
   url: connectionString,
   tls: { rejectUnauthorized: false },
 });
+
 export const prisma = new PrismaClient({ adapter });

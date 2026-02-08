@@ -1,24 +1,32 @@
 /**
- * DataProcessor — Handles raw data storage with type-specific store operations.
- * Layer 2 of the ELT pipeline: parse/extract, store raw to storage, write to DB.
+ * JobProcessor — Handles raw job storage and DB upserts.
+ * Layer 2 of the ELT pipeline: store raw to blob, write to DB.
  */
 
 import { hashContent, slugify } from "@/utils";
-import { prisma } from "../lib/prisma";
-import { uploadJson } from "../lib/storage";
+import { prisma } from "../../lib/prisma";
+import type { BlobStorage } from "../../lib/storage";
 import type { AshbyJob } from "../scraping/ashby-scraper";
-import type { JobSource, RawNewsData } from "../types";
-import { normalizeJob } from "./index";
+import type { JobSource } from "../../types";
+import { normalizeJob } from "./utils";
 import { type ILogObj, Logger } from "tslog";
 import type { JobPosting } from "backend/generated/prisma/client";
 import type { JobPostingCreateManyInput } from "backend/generated/prisma/models/JobPosting";
 
-export class DataProcessor {
-  private readonly log: Logger<ILogObj> = new Logger();
+export class JobProcessingService {
+  private readonly log: Logger<ILogObj>;
+  private readonly storage: BlobStorage;
+
+  constructor(storage: BlobStorage) {
+    this.log = new Logger();
+    this.storage = storage;
+  }
 
   /**
-   * Store raw job data to Vercel Blob. Dispatches to type-specific store logic.
-   * @returns Blob URL where the raw data was stored
+   * Store raw job data to Blob storage. Dispatches to type-specific store logic.
+   * @param type - The type of raw data to store
+   * @param data - The raw data to store
+   * @returns The blob URL where the raw data was stored
    */
   async store<T>(type: JobSource, data: T): Promise<string> {
     switch (type) {
@@ -34,7 +42,7 @@ export class DataProcessor {
     }
   }
 
-  /** Store multiple raw jobs to Vercel Blob. Returns blob URLs in same order as input. */
+  /** Store multiple raw jobs to Blob storage. Returns blob URLs in same order as input. */
   async storeBatch<T>(type: JobSource, items: T[]): Promise<string[]> {
     const urls: string[] = [];
     for (const item of items) {
@@ -46,14 +54,14 @@ export class DataProcessor {
 
   /**
    * Upsert ashby jobs into the database via Prisma.
-   * 1) Grab existing job postings from de-deduping
+   * 1) Grab existing job postings for de-deduping
    * 2) Prepare all ingested job data before touching the DB
-   * 3) In one transaction, for any job posting that did not exist, create a new job posting
-   * 4) In one transaction, for any job posting that exists, update the job posting
-   * 5) In one transaction, for any job posting that does not exist, mark it as deleted (soft delete, we still want to keep the history of the job posting)
+   * 3) Create new job postings
+   * 4) Update existing job postings
+   * 5) Delete job postings no longer on board
    * 6) Return the counts of new, updated, and removed jobs
    */
-  async upsertAshbyJobs(
+  async syncAshbyJobs(
     companyId: string,
     jobBoardName: string,
     jobs: AshbyJob[]
@@ -64,7 +72,7 @@ export class DataProcessor {
       return { jobsNew: 0, jobsUpdated: 0, jobsRemoved: 0 };
     }
 
-    // --- Step 1: Grab existing job postings for de-duping ---
+    // --- Step 1: Grab existing job postings for de-deduping ---
     const incomingExternalIds = jobs.map((job) => job.id);
     const existingJobPostings = await prisma.jobPosting.findMany({
       where: {
@@ -85,13 +93,10 @@ export class DataProcessor {
     );
 
     // --- Step 2: Prepare all ingested job data before touching the DB ---
-    const seenExternalIds = new Set<string>();
     const createOps: JobPostingCreateManyInput[] = [];
     const updateOps: JobPosting[] = [];
 
     for (const job of jobs) {
-      seenExternalIds.add(job.id);
-
       const { remoteType, seniorityLevel } = normalizeJob(job);
       const description = job.descriptionPlain ?? job.descriptionHtml;
       const descriptionHash = hashContent(description);
@@ -135,30 +140,36 @@ export class DataProcessor {
       }
     }
 
-    // --- Step 4: Execute creates in one transaction ---
+    // --- Step 3: Execute creates ---
     if (createOps.length > 0) {
       this.log.debug(`Creating ${createOps.length} new jobs`);
+      await prisma.jobPosting.createMany({ data: createOps });
+    }
 
-      await prisma.$transaction(async (tx) => {
-        await tx.jobPosting.createMany({ data: createOps });
+    // --- Step 4: Execute updates ---
+    if (updateOps.length > 0) {
+      this.log.debug(`Updated ${updateOps.length} existing jobs`);
+      await prisma.jobPosting.updateMany({
+        where: {
+          id: { in: updateOps.map((j) => j.id) },
+        },
+        data: updateOps,
       });
     }
 
-    // --- Step 5: Execute updates in one transaction ---
-    if (updateOps.length > 0) {
-      this.log.debug(`Updated ${updateOps.length} existing jobs`);
-    }
-
-    // --- Step 6: Execute deletes in one transaction ---
+    // --- Step 5: Execute deletes ---
     if (deletedByExternalId.length > 0) {
       this.log.debug(
         `Deleting ${deletedByExternalId.length} jobs no longer on board`
       );
-
-      await prisma.$transaction(async (tx) => {
-        await tx.jobPosting.deleteMany({
-          where: { id: { in: deletedByExternalId.map((job) => job.id) } },
-        });
+      await prisma.jobPosting.deleteMany({
+        where: {
+          id: {
+            in: deletedByExternalId.map(
+              (j: (typeof existingJobPostings)[number]) => j.id
+            ),
+          },
+        },
       });
     }
 
@@ -169,92 +180,11 @@ export class DataProcessor {
     };
   }
 
-  /**
-   * Store raw news data to Vercel Blob.
-   * @returns Blob URL where the raw data was stored
-   */
-  async storeNewsRaw(articles: RawNewsData[]): Promise<string> {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const pathname = `tavily/batch-${timestamp}.json`;
-    return await uploadJson(pathname, articles);
-  }
-
-  /**
-   * Upsert news articles into the database via Prisma.
-   * Uses contentHash for change detection, deduplicates by (companyId, externalUrl).
-   */
-  async upsertNewsArticles(
-    companyId: string,
-    articles: RawNewsData[]
-  ): Promise<{ articlesNew: number; articlesUpdated: number }> {
-    const now = new Date();
-    let articlesNew = 0;
-    let articlesUpdated = 0;
-
-    for (const article of articles) {
-      const contentHash = hashContent(article.content);
-
-      const existing = await prisma.newsArticle.findUnique({
-        where: {
-          companyId_externalUrl: {
-            companyId,
-            externalUrl: article.url,
-          },
-        },
-      });
-
-      if (existing) {
-        const changed = existing.contentHash !== contentHash;
-        await prisma.newsArticle.update({
-          where: { id: existing.id },
-          data: {
-            title: article.title,
-            snippet: article.snippet,
-            content: article.content,
-            publishedAt: article.publishedAt
-              ? new Date(article.publishedAt)
-              : undefined,
-            source: article.source,
-
-            rawScore: article.score,
-            contentHash,
-            lastSeenAt: now,
-          },
-        });
-        if (changed) {
-          articlesUpdated++;
-        }
-      } else {
-        await prisma.newsArticle.create({
-          data: {
-            companyId,
-            externalUrl: article.url,
-            title: article.title,
-            snippet: article.snippet,
-            content: article.content,
-            publishedAt: article.publishedAt
-              ? new Date(article.publishedAt)
-              : undefined,
-            source: article.source,
-
-            rawScore: article.score,
-            contentHash,
-            firstSeenAt: now,
-            lastSeenAt: now,
-          },
-        });
-        articlesNew++;
-      }
-    }
-
-    return { articlesNew, articlesUpdated };
-  }
-
   private async storeAshbyRaw(job: AshbyJob): Promise<string> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const slug = slugify(job.title);
     const pathname = `ashby/${timestamp}/${slug}.json`;
-    return await uploadJson(pathname, job);
+    return await this.storage.uploadJson(pathname, job);
   }
 
   // biome-ignore lint/suspicious/useAwait: Unimplemented

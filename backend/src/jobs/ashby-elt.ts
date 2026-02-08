@@ -5,12 +5,13 @@
  * 3. Transformation: Normalize, deduplicate by external_id, detect changes via description hash, update/insert
  */
 
-import { DataProcessor } from "../data";
+import { JobProcessingService } from "../services/data-processor";
 import { prisma } from "../lib/prisma";
+import { VercelBlobStorage } from "../lib/storage";
 import {
   type AshbyJobsResponse,
-  AshbyScraper,
-} from "../scraping/ashby-scraper";
+  AshbyScrapingService,
+} from "../services/scraping/ashby-scraper";
 import { Job } from ".";
 
 export interface AshbyELTPipelineResult {
@@ -21,20 +22,26 @@ export interface AshbyELTPipelineResult {
 }
 
 export class AshbyELTJob extends Job {
+  private readonly jobProcessor: JobProcessingService;
+
   constructor() {
     super("ashby-elt");
+
+    this.jobProcessor = new JobProcessingService(new VercelBlobStorage());
   }
 
   /**
    * Run the Ashby ELT pipeline for a job board.
-   * @param jobBoardName - Ashby job board identifier (e.g. "rain")
-   * @param companyId - Company identifier (defaults to a new UUID)
+   * @param args - The arguments for the job
+   * @param args.companySlug - The slug of the company to run the pipeline for
+   * @returns The result of the job execution
    */
   async run(args: { companySlug: string }): Promise<AshbyELTPipelineResult> {
     const companySlug = args.companySlug;
     if (!companySlug) {
       throw new Error("Company slug is required");
     }
+    const startTime = Date.now();
 
     const pipelineResult: AshbyELTPipelineResult = {
       jobsFound: 0,
@@ -59,7 +66,7 @@ export class AshbyELTJob extends Job {
     this.log.debug(`Found company ${company.name} with ID ${company.id}`);
 
     // --- Layer 1: Extract (Scraping) ---
-    const scraper = new AshbyScraper();
+    const scraper = new AshbyScrapingService();
     const response = await scraper.scrape<AshbyJobsResponse>(jobBoardName);
     const jobs = response.jobs ?? [];
     pipelineResult.jobsFound = jobs.length;
@@ -75,14 +82,13 @@ export class AshbyELTJob extends Job {
     }
 
     // --- Layer 2: Load (Raw file storage) ---
-    const dataProcessor = new DataProcessor();
-    const rawPaths = await dataProcessor.storeBatch("ashby", jobs);
+    const rawPaths = await this.jobProcessor.storeBatch("ashby", jobs);
     this.log.debug(
       `Stored ${rawPaths.length} raw files for company ${company.name} and job board ${jobBoardName}`
     );
 
     // --- Layer 3: Transform & persist to DB ---
-    const dbResult = await dataProcessor.upsertAshbyJobs(
+    const dbResult = await this.jobProcessor.syncAshbyJobs(
       company.id,
       jobBoardName,
       jobs
@@ -103,11 +109,11 @@ export class AshbyELTJob extends Job {
         source: "ashby",
         status: "completed",
         jobsFound: pipelineResult.jobsFound,
-        jobsNew: dbResult.jobsNew,
-        jobsUpdated: dbResult.jobsUpdated,
-        jobsRemoved: dbResult.jobsRemoved,
-        startedAt: new Date(),
-        completedAt: new Date(),
+        jobsNew: pipelineResult.jobsNew,
+        jobsUpdated: pipelineResult.jobsUpdated,
+        jobsRemoved: pipelineResult.jobsRemoved,
+        startedAt: new Date(startTime),
+        completedAt: new Date(Date.now()),
       },
     });
 

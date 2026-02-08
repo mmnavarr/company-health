@@ -3,10 +3,10 @@
  * Metrics calculation, health score, growth indicator.
  */
 
-import { PrismaClient } from "backend/generated/prisma/client";
-import type { CompanyHealthMetrics } from "../types";
+import type { PrismaClient } from "../../../generated/prisma/client";
+import type { CompanyHealthMetrics } from "../../types";
 
-export class AnalyticsService {
+export class HealthMetricsService {
   private readonly prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {
@@ -45,10 +45,10 @@ export class AnalyticsService {
     const jobsRemoved30d = Number(counts.removed_30d);
     const jobVelocityScore = (jobsAdded30d - jobsRemoved30d) / totalActiveJobs;
     const departmentDiversityScore = await this.prisma.jobPosting.count({
-      where: { companyId: companyId, removedAt: null, department: { not: null } },
+      where: { companyId, removedAt: null, department: { not: null } },
     });
     const locationDiversityScore = await this.prisma.jobPosting.count({
-      where: { companyId: companyId, removedAt: null, location: { not: null } },
+      where: { companyId, removedAt: null, location: { not: null } },
     });
     const healthScore = (jobVelocityScore + departmentDiversityScore + locationDiversityScore) / 3;
     const growthIndicator = jobVelocityScore > 0 ? "expanding" : jobVelocityScore < 0 ? "contracting" : "stable";
@@ -57,18 +57,18 @@ export class AnalyticsService {
       id: company.id,
       companyId: company.id,
       metricDate,
-      totalActiveJobs: totalActiveJobs,
-      jobsAdded7d: jobsAdded7d,
-      jobsRemoved7d: jobsRemoved7d ?? undefined,
-      jobsAdded30d: jobsAdded30d,
-      jobsRemoved30d: jobsRemoved30d ?? undefined,
-      jobVelocityScore: jobVelocityScore,
-      departmentDiversityScore: departmentDiversityScore,
-      locationDiversityScore: locationDiversityScore,
+      totalActiveJobs,
+      jobsAdded7d,
+      jobsRemoved7d: jobsRemoved7d ? jobsRemoved7d : undefined,
+      jobsAdded30d,
+      jobsRemoved30d: jobsRemoved30d ? jobsRemoved30d : undefined,
+      jobVelocityScore,
+      departmentDiversityScore,
+      locationDiversityScore,
       // seniorityDistribution: seniorityDistribution,
       // departmentDistribution: departmentDistribution,
-      healthScore: healthScore,
-      growthIndicator: growthIndicator,
+      healthScore,
+      growthIndicator,
       createdAt: new Date(),
     };
   }

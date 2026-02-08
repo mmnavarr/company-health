@@ -2,23 +2,23 @@
  * Ashby scraper — TDD §4.2 (API-based)
  */
 
-import type { Scraper } from ".";
+import type { ScrapingService } from ".";
 
 /** Address schema for Ashby location objects */
-type AshbyAddress = {
+interface AshbyAddress {
   addressLocality?: string;
   addressRegion?: string;
   addressCountry?: string;
 };
 
 /** Secondary location for a job */
-type AshbySecondaryLocation = {
+interface AshbySecondaryLocation {
   location: string;
   address?: AshbyAddress;
 };
 
 /** Compensation component within a tier */
-type AshbyCompensationComponent = {
+interface AshbyCompensationComponent {
   id: string;
   summary: string;
   compensationType: string;
@@ -29,7 +29,7 @@ type AshbyCompensationComponent = {
 };
 
 /** Compensation tier (e.g. "$75K – $100K • Offers Equity • Offers Bonus") */
-type AshbyCompensationTier = {
+interface AshbyCompensationTier {
   id: string;
   tierSummary: string;
   title: string | null;
@@ -38,7 +38,7 @@ type AshbyCompensationTier = {
 };
 
 /** Summary component (flattened view of compensation) */
-type AshbySummaryComponent = {
+interface AshbySummaryComponent {
   compensationType: string;
   interval: string;
   currencyCode: string | null;
@@ -47,7 +47,7 @@ type AshbySummaryComponent = {
 };
 
 /** Compensation info (when includeCompensation=true) */
-type AshbyCompensation = {
+interface AshbyCompensation {
   compensationTierSummary?: string;
   scrapeableCompensationSalarySummary?: string | null;
   compensationTiers?: AshbyCompensationTier[];
@@ -55,7 +55,7 @@ type AshbyCompensation = {
 };
 
 /** Job object from Ashby posting-api job-board endpoint */
-export type AshbyJob = {
+export interface AshbyJob {
   id: string;
   title: string;
   location: string;
@@ -82,20 +82,20 @@ export type AshbyJob = {
   compensation?: AshbyCompensation;
 };
 
-export type AshbyJobsResponse = {
+export interface AshbyJobsResponse {
   apiVersion?: string;
   jobs?: AshbyJob[];
 };
 
-export class AshbyScraper implements Scraper {
-  public static getJobsApiUrl(jobBoardName: string): string {
+export class AshbyScrapingService implements ScrapingService {
+  static getJobsApiUrl(jobBoardName: string): string {
     return `https://api.ashbyhq.com/posting-api/job-board/${jobBoardName}?includeCompensation=true`;
   }
 
   async scrape<AshbyJobsResponse>(
     jobBoardName: string
   ): Promise<AshbyJobsResponse> {
-    const url = AshbyScraper.getJobsApiUrl(jobBoardName);
+    const url = AshbyScrapingService.getJobsApiUrl(jobBoardName);
     const res = await fetch(url);
 
     if (!res.ok) {

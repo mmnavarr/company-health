@@ -60,3 +60,7 @@ The job service is an ELT (not ETL) pipeline. Ingestors scrape the data and post
    ├─▶ Check for existing job by external_id
    ├─▶ Detect changes via description hash
    └─▶ Update or insert to normalized job_postings
+
+Pros: Loading job contents to data store immediately after injestion keeps it flexible in case we eventually want to change how we do parsing / extraction (libraries are sprouting like weeds doing html -> markdown better and better).
+
+Cons: Transparency, telemetry and configurability. A workflow orchestration tool like Temporal would allow us to skip queues / pubsub and call individual activities with built-in retires, backoffs, etc. and provide out-of-the-box visibility into the workflow activity inputs / outputs during execution.
