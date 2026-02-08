@@ -1,19 +1,15 @@
 /**
  * Job Service — Company Health Job Scraping System
  * Implementation aligned with specs/TDD.md
+ * Built with ElysiaJS for type-safe API
  */
 
-import { createApp } from "./api";
+import { app } from "./api";
 
-const app = createApp();
 const port = Number(process.env.PORT) || 3000;
 
-if (import.meta.main) {
-  Bun.serve({
-    port,
-    fetch: app.fetch,
-  });
+app.listen(port, () => {
   console.log(`Job service running at http://localhost:${port}`);
-}
+});
 
-export default { port, fetch: app.fetch };
+export default app;

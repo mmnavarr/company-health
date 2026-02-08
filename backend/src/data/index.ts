@@ -11,6 +11,15 @@ export interface NormalizedJobFields {
   seniorityLevel: string;
 }
 
+// Pre-compiled regex patterns (top-level scope for performance)
+const REMOTE_RE = /remote|anywhere|work from home/i;
+const HYBRID_RE = /hybrid/i;
+const INTERN_RE = /intern|co-op/i;
+const ENTRY_RE = /junior|entry|associate|level 1/i;
+const SENIOR_RE = /senior|sr\.?|lead|level 4/i;
+const STAFF_RE = /staff|principal|level 5/i;
+const EXEC_RE = /director|vp|head of|chief/i;
+
 /**
  * Derive normalized fields from a job's title and location.
  * Works with any source type — no dependency on a raw intermediate schema.
@@ -27,10 +36,10 @@ export function normalizeJob(job: {
 
 function detectRemoteType(location?: string, title?: string): string {
   const text = [location, title].filter(Boolean).join(" ").toLowerCase();
-  if (/remote|anywhere|work from home/i.test(text)) {
+  if (REMOTE_RE.test(text)) {
     return "remote";
   }
-  if (/hybrid/i.test(text)) {
+  if (HYBRID_RE.test(text)) {
     return "hybrid";
   }
   return "onsite";
@@ -41,19 +50,19 @@ function extractSeniority(title?: string): string {
     return "mid";
   }
   const t = title.toLowerCase();
-  if (/intern|co-op/i.test(t)) {
+  if (INTERN_RE.test(t)) {
     return "intern";
   }
-  if (/junior|entry|associate|level 1/i.test(t)) {
+  if (ENTRY_RE.test(t)) {
     return "entry";
   }
-  if (/senior|sr\.?|lead|level 4/i.test(t)) {
+  if (SENIOR_RE.test(t)) {
     return "senior";
   }
-  if (/staff|principal|level 5/i.test(t)) {
+  if (STAFF_RE.test(t)) {
     return "staff";
   }
-  if (/director|vp|head of|chief/i.test(t)) {
+  if (EXEC_RE.test(t)) {
     return "executive";
   }
   return "mid";

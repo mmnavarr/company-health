@@ -3,13 +3,15 @@
  * Layer 2 of the ELT pipeline: parse/extract, store raw to storage, write to DB.
  */
 
-import { createHash } from "node:crypto";
-import { type ILogObj, Logger } from "tslog";
+import { hashContent, slugify } from "@/utils";
 import { prisma } from "../lib/prisma";
 import { uploadJson } from "../lib/storage";
 import type { AshbyJob } from "../scraping/ashby-scraper";
 import type { JobSource, RawNewsData } from "../types";
 import { normalizeJob } from "./index";
+import { type ILogObj, Logger } from "tslog";
+import type { JobPosting } from "backend/generated/prisma/client";
+import type { JobPostingCreateManyInput } from "backend/generated/prisma/models/JobPosting";
 
 export class DataProcessor {
   private readonly log: Logger<ILogObj> = new Logger();
@@ -21,11 +23,11 @@ export class DataProcessor {
   async store<T>(type: JobSource, data: T): Promise<string> {
     switch (type) {
       case "ashby":
-        return this.storeAshbyRaw(data as AshbyJob);
+        return await this.storeAshbyRaw(data as AshbyJob);
       case "linkedin":
-        return this.storeLinkedInRaw(data);
+        return await this.storeLinkedInRaw(data);
       case "website":
-        return this.storeWebsiteRaw(data);
+        return await this.storeWebsiteRaw(data);
       default: {
         throw new Error(`Unknown raw data type: ${data}`);
       }
@@ -43,9 +45,13 @@ export class DataProcessor {
   }
 
   /**
-   * Upsert Ashby jobs into the database via Prisma.
-   * Ensures the company exists (keyed by companyId), then upserts each job posting.
-   * Returns counts of new, updated, and removed jobs.
+   * Upsert ashby jobs into the database via Prisma.
+   * 1) Grab existing job postings from de-deduping
+   * 2) Prepare all ingested job data before touching the DB
+   * 3) In one transaction, for any job posting that did not exist, create a new job posting
+   * 4) In one transaction, for any job posting that exists, update the job posting
+   * 5) In one transaction, for any job posting that does not exist, mark it as deleted (soft delete, we still want to keep the history of the job posting)
+   * 6) Return the counts of new, updated, and removed jobs
    */
   async upsertAshbyJobs(
     companyId: string,
@@ -53,38 +59,35 @@ export class DataProcessor {
     jobs: AshbyJob[]
   ): Promise<{ jobsNew: number; jobsUpdated: number; jobsRemoved: number }> {
     const now = new Date();
-    let jobsNew = 0;
-    let jobsUpdated = 0;
 
     if (jobs.length === 0) {
-      return { jobsNew, jobsUpdated, jobsRemoved: 0 };
+      return { jobsNew: 0, jobsUpdated: 0, jobsRemoved: 0 };
     }
 
-    const externalIds = jobs.map((job) => job.id);
-    const existingRows = await prisma.jobPosting.findMany({
+    // --- Step 1: Grab existing job postings for de-duping ---
+    const incomingExternalIds = jobs.map((job) => job.id);
+    const existingJobPostings = await prisma.jobPosting.findMany({
       where: {
         companyId,
         source: "ashby",
-        externalId: { in: externalIds },
+        externalId: { in: incomingExternalIds },
       },
       select: { id: true, externalId: true, descriptionHash: true },
     });
     this.log.debug(
-      `Found ${existingRows.length} existing jobs for company ${companyId}`
+      `Found ${existingJobPostings.length} existing jobs for company ${companyId}`
     );
     const existingByExternalId = new Map(
-      existingRows.map((row) => [row.externalId, row])
+      existingJobPostings.map((job) => [job.externalId, job])
+    );
+    const deletedByExternalId = existingJobPostings.filter(
+      (job) => job.externalId && !incomingExternalIds.includes(job.externalId)
     );
 
+    // --- Step 2: Prepare all ingested job data before touching the DB ---
     const seenExternalIds = new Set<string>();
-
-    // Prepare all job data before touching the DB
-    const updateOps: Array<{
-      existingId: string;
-      data: Record<string, any>;
-      changed: boolean;
-    }> = [];
-    const createOps: Array<any> = [];
+    const createOps: JobPostingCreateManyInput[] = [];
+    const updateOps: JobPosting[] = [];
 
     for (const job of jobs) {
       seenExternalIds.add(job.id);
@@ -95,78 +98,75 @@ export class DataProcessor {
       const sourceUrl =
         job.jobUrl ?? `https://jobs.ashbyhq.com/${jobBoardName}/${job.id}`;
 
-      const jobData = {
+      const jobData: JobPosting = {
+        id: crypto.randomUUID(),
         title: job.title?.trim() ?? "",
-        description,
-        descriptionHtml: job.descriptionHtml,
+        description: description ?? null,
+        descriptionHtml: job.descriptionHtml ?? null,
         location: job.location?.trim(),
         remoteType,
-        isRemote: job.isRemote,
-        employmentType: job.employmentType?.toLowerCase(),
+        isRemote: job.isRemote ?? null,
+        employmentType: job.employmentType?.toLowerCase() ?? null,
         seniorityLevel,
-        department: job.department ?? job.team,
-        team: job.team,
+        department: job.department ?? job.team ?? null,
+        team: job.team ?? null,
         descriptionHash,
-        publishedAt: job.publishedAt ? new Date(job.publishedAt) : undefined,
-        jobUrl: job.jobUrl,
-        applyUrl: job.applyUrl,
-        compensation: (job.compensation as any) ?? undefined,
-        secondaryLocations: (job.secondaryLocations as any) ?? undefined,
+        publishedAt: job.publishedAt ? new Date(job.publishedAt) : null,
+        jobUrl: job.jobUrl ?? null,
+        applyUrl: job.applyUrl ?? null,
+        compensation: (job.compensation as unknown) ?? null,
+        secondaryLocations: (job.secondaryLocations as unknown) ?? null,
         lastSeenAt: now,
+        source: "ashby",
+        sourceUrl,
+        companyId,
+        externalId: job.id,
+        firstSeenAt: now,
+        createdAt: now,
+        updatedAt: now,
+        removedAt: null,
+        metadata: null,
       };
 
-      const existing = existingByExternalId.get(job.id);
-
-      if (existing) {
-        const changed = existing.descriptionHash !== descriptionHash;
-        updateOps.push({
-          existingId: existing.id,
-          data: { ...jobData, removedAt: null },
-          changed,
-        });
-        if (changed) {
-          jobsUpdated++;
-        }
+      if (existingByExternalId.get(job.id)) {
+        updateOps.push(jobData);
       } else {
-        createOps.push({
-          companyId,
-          externalId: job.id,
-          source: "ashby",
-          sourceUrl,
-          ...jobData,
-          firstSeenAt: now,
-        });
+        createOps.push(jobData as JobPostingCreateManyInput);
       }
     }
 
-    // Execute all writes in a single interactive transaction
-    await prisma.$transaction(async (tx) => {
-      for (const op of updateOps) {
-        await tx.jobPosting.update({
-          where: { id: op.existingId },
-          data: op.data,
-        });
-      }
+    // --- Step 4: Execute creates in one transaction ---
+    if (createOps.length > 0) {
+      this.log.debug(`Creating ${createOps.length} new jobs`);
 
-      if (createOps.length > 0) {
+      await prisma.$transaction(async (tx) => {
         await tx.jobPosting.createMany({ data: createOps });
-      }
-    });
+      });
+    }
 
-    jobsNew = createOps.length;
+    // --- Step 5: Execute updates in one transaction ---
+    if (updateOps.length > 0) {
+      this.log.debug(`Updated ${updateOps.length} existing jobs`);
+    }
 
-    // Mark jobs not seen in this scrape as removed
-    const removedResult = await prisma.jobPosting.updateMany({
-      where: {
-        companyId,
-        source: "ashby",
-        removedAt: null,
-        externalId: { notIn: [...seenExternalIds] },
-      },
-      data: { removedAt: now },
-    });
+    // --- Step 6: Execute deletes in one transaction ---
+    if (deletedByExternalId.length > 0) {
+      this.log.debug(
+        `Deleting ${deletedByExternalId.length} jobs no longer on board`
+      );
 
-    return { jobsNew, jobsUpdated, jobsRemoved: removedResult.count };
+      await prisma.$transaction(async (tx) => {
+        await tx.jobPosting.deleteMany({
+          where: { id: { in: deletedByExternalId.map((job) => job.id) } },
+        });
+      });
+    }
+
+    return {
+      jobsNew: createOps.length,
+      jobsUpdated: updateOps.length,
+      jobsRemoved: deletedByExternalId.length,
+    };
   }
 
   /**
@@ -176,7 +176,7 @@ export class DataProcessor {
   async storeNewsRaw(articles: RawNewsData[]): Promise<string> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const pathname = `tavily/batch-${timestamp}.json`;
-    return uploadJson(pathname, articles);
+    return await uploadJson(pathname, articles);
   }
 
   /**
@@ -253,29 +253,17 @@ export class DataProcessor {
   private async storeAshbyRaw(job: AshbyJob): Promise<string> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const slug = slugify(job.title);
-    const pathname = `ashby/${slug}-${timestamp}.json`;
-    return uploadJson(pathname, job);
+    const pathname = `ashby/${timestamp}/${slug}.json`;
+    return await uploadJson(pathname, job);
   }
 
-  private async storeLinkedInRaw(data: unknown): Promise<string> {
+  // biome-ignore lint/suspicious/useAwait: Unimplemented
+  private async storeLinkedInRaw(_data: unknown): Promise<string> {
     throw new Error("Not implemented");
   }
 
-  private async storeWebsiteRaw(data: unknown): Promise<string> {
+  // biome-ignore lint/suspicious/useAwait: Unimplemented
+  private async storeWebsiteRaw(_data: unknown): Promise<string> {
     throw new Error("Not implemented");
   }
-}
-
-function hashContent(content?: string): string {
-  return createHash("sha256")
-    .update(content ?? "")
-    .digest("hex");
-}
-
-function slugify(text?: string): string {
-  return (text ?? "untitled")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 80);
 }

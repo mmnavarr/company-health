@@ -5,7 +5,6 @@
  * 3. Transformation: Normalize, deduplicate by external_id, detect changes via description hash, update/insert
  */
 
-import { type ILogObj, Logger } from "tslog";
 import { DataProcessor } from "../data";
 import { prisma } from "../lib/prisma";
 import {
@@ -14,14 +13,11 @@ import {
 } from "../scraping/ashby-scraper";
 import { Job } from ".";
 
-const log: Logger<ILogObj> = new Logger();
-
 export interface AshbyELTPipelineResult {
   jobsFound: number;
   jobsNew: number;
   jobsUpdated: number;
   jobsRemoved: number;
-  rawPaths: string[];
 }
 
 export class AshbyELTJob extends Job {
@@ -45,7 +41,6 @@ export class AshbyELTJob extends Job {
       jobsNew: 0,
       jobsUpdated: 0,
       jobsRemoved: 0,
-      rawPaths: [],
     };
 
     // --- Layer 0: Validate company exists ---
@@ -61,19 +56,19 @@ export class AshbyELTJob extends Job {
         `Company ${companySlug} does not have an Ashby board name`
       );
     }
-    log.debug(`Found company ${company.name} with ID ${company.id}`);
+    this.log.debug(`Found company ${company.name} with ID ${company.id}`);
 
     // --- Layer 1: Extract (Scraping) ---
     const scraper = new AshbyScraper();
     const response = await scraper.scrape<AshbyJobsResponse>(jobBoardName);
     const jobs = response.jobs ?? [];
     pipelineResult.jobsFound = jobs.length;
-    log.debug(
+    this.log.debug(
       `Found ${pipelineResult.jobsFound} jobs for company ${company.name} and job board ${jobBoardName}`
     );
 
     if (jobs.length === 0) {
-      log.info(
+      this.log.info(
         `No jobs found for company ${company.name} and job board ${jobBoardName}`
       );
       return pipelineResult;
@@ -81,9 +76,9 @@ export class AshbyELTJob extends Job {
 
     // --- Layer 2: Load (Raw file storage) ---
     const dataProcessor = new DataProcessor();
-    pipelineResult.rawPaths = await dataProcessor.storeBatch("ashby", jobs);
-    log.debug(
-      `Stored ${pipelineResult.rawPaths.length} raw files for company ${company.name} and job board ${jobBoardName}`
+    const rawPaths = await dataProcessor.storeBatch("ashby", jobs);
+    this.log.debug(
+      `Stored ${rawPaths.length} raw files for company ${company.name} and job board ${jobBoardName}`
     );
 
     // --- Layer 3: Transform & persist to DB ---
@@ -92,7 +87,7 @@ export class AshbyELTJob extends Job {
       jobBoardName,
       jobs
     );
-    log.debug(
+    this.log.debug(
       `Upserted ${dbResult.jobsNew} new jobs, ${dbResult.jobsUpdated} updated jobs, and ${dbResult.jobsRemoved} removed jobs for company ${company.name} and job board ${jobBoardName}`
     );
 
@@ -116,7 +111,7 @@ export class AshbyELTJob extends Job {
       },
     });
 
-    log.debug(
+    this.log.debug(
       `Recorded scraping run for company ${company.name} and job board ${jobBoardName}`
     );
     return pipelineResult;

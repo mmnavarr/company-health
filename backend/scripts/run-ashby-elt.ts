@@ -1,16 +1,17 @@
 /**
  * Run Ashby ELT job for a job board.
- * Usage: bun run scripts/run-ashby-elt.ts [jobBoardName]
- * Default job board: rain
+ * Usage: bun run scripts/run-ashby-elt.ts [companySlug]
+ * Default company slug: rain
  */
 
-import { runAshbyELTPipeline } from "../src/jobs/ashby-elt";
+import { AshbyELTJob } from "../src/jobs/ashby-elt";
 
-const COMPANY_SLUG = process.argv[2];
+const companySlug = process.argv[2] ?? "rain";
 
 async function main() {
   try {
-    const result = await runAshbyELTPipeline(COMPANY_SLUG);
+    const job = new AshbyELTJob();
+    const result = await job.run({ companySlug });
     console.log("Result:", result);
   } catch (error) {
     console.error("Error:", error);
