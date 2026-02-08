@@ -1,181 +1,220 @@
+# Company Health
 
+A system that monitors job postings, news, and fundraising rounds to assess company health metrics. Built with Bun, ElysiaJS, Prisma, and Next.js.
 
-# Technical Design Document: Company Health Job Scraping System
-
-## 1. Executive Summary
-
-### 1.1 Overview
-This document outlines the technical architecture for a Company Health system that monitors job postings, news, fundraising rounds, web traffic, internal metrics and more to assess company health metrics.
-
-### 1.2 Objectives
-- Automatically discover and scrape job postings from multiple sources
-- Automatically discover fundraising rounds
-- Ingest news to detect sentiment and media presence
-- Normalize and store job data in a unified format
-- Track changes for documents and metrics over time
-- Provide metrics for assessing company health and growth trajectories
-
----
-
-## 2. System Architecture
-
-### 2.1 High-Level Architecture
+## Repository Structure
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     Scraping System                      │
-├─────────────────────────────────────────────────────────────┤
-│                                                               │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐  │
-│  │   Scraping   │    │     Data     │    │  Analytics   │  │
-│  │   Layer      │───▶│  Processing  │───▶│   Engine     │  │
-│  │              │    │    Layer     │    │              │  │
-│  └──────────────┘    └──────────────┘    └──────────────┘  │
-│         │                    │                    │          │
-│         ▼                    ▼                    ▼          │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │              Data Storage Layer                       │  │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────────────┐  │  │
-│  │  │PostgreSQL│  │  Redis   │  │  Object Storage  │  │  │
-│  │  └──────────┘  └──────────┘  └──────────────────┘  │  │
-│  └──────────────────────────────────────────────────────┘  │
-│                                                               │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │              Orchestration Layer                      │  │
-│  │                    (Temporal)                          │  │
-│  └──────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-         │                                          │
-         ▼                                          ▼
-  ┌─────────────┐                           ┌─────────────┐
-  │   API/UI    │                           │ Monitoring  │
-  │   Layer     │                           │   & Alerts  │
-  └─────────────┘                           └─────────────┘
+company-health/
+├── backend/                        # Backend service (Bun + ElysiaJS)
+│   ├── src/
+│   │   ├── api/                    # REST API layer (ElysiaJS)
+│   │   │   ├── index.ts            # API entrypoint & server setup
+│   │   │   └── routes/             # Route handlers
+│   │   │       ├── companies.ts    # Company CRUD & job listings
+│   │   │       ├── dashboard.ts    # Dashboard aggregate data
+│   │   │       ├── fundraising.ts  # Funding rounds & summaries
+│   │   │       ├── jobs.ts         # Job posting endpoints
+│   │   │       └── news.ts         # News article endpoints
+│   │   ├── jobs/                   # ELT pipeline orchestrators
+│   │   │   ├── index.ts            # Base Job class
+│   │   │   ├── ashby-elt.ts        # Ashby job board scraping pipeline
+│   │   │   ├── news-elt.ts         # News article scraping pipeline
+│   │   │   └── fundraising-elt.ts  # Fundraising data scraping pipeline
+│   │   ├── services/
+│   │   │   ├── scraping/           # Data source scrapers
+│   │   │   │   ├── ashby-scraper.ts          # Ashby job board API
+│   │   │   │   ├── tavily-news-scraper.ts    # Tavily news search
+│   │   │   │   └── tavily-funding-scraper.ts # Tavily funding search
+│   │   │   ├── data-processor/     # Normalization, dedup & DB sync
+│   │   │   │   ├── job-processor.ts          # Job posting upserts
+│   │   │   │   ├── news-processor.ts         # News article upserts
+│   │   │   │   └── fundraising-processor.ts  # Funding round extraction & upserts
+│   │   │   ├── llm/                # LLM-powered extraction
+│   │   │   │   └── funding-extraction.ts     # OpenAI structured extraction for funding data
+│   │   │   └── health-metrics/     # Health score calculation
+│   │   ├── lib/
+│   │   │   ├── prisma.ts           # Prisma client singleton (Bun adapter)
+│   │   │   └── storage.ts          # Vercel Blob storage wrapper
+│   │   ├── types/                  # Shared TypeScript types
+│   │   └── utils/                  # Helpers (hashing, slugify, etc.)
+│   ├── prisma/
+│   │   ├── schema.prisma           # Database schema
+│   │   └── migrations/             # SQL migration files
+│   ├── generated/prisma/           # Generated Prisma client (git-ignored)
+│   ├── scripts/                    # CLI runner scripts for ELT jobs
+│   └── .env                        # Environment variables (not committed)
+├── frontend/                       # Next.js dashboard UI
+│   └── src/
+│       ├── app/                    # Next.js app router pages
+│       ├── components/             # React components
+│       └── lib/api.ts              # Backend API client
+└── specs/
+    └── TDD.md                      # Technical design document
 ```
 
-### 2.2 Component Descriptions
+## Tech Stack
 
-#### 2.2.1 Scraping Layer
-**Purpose**: Extract job posting data from multiple sources
+| Layer       | Technology                                      |
+|-------------|------------------------------------------------|
+| Runtime     | [Bun](https://bun.sh)                          |
+| API         | [ElysiaJS](https://elysiajs.com) (type-safe)   |
+| Database    | PostgreSQL (Supabase)                           |
+| ORM         | [Prisma](https://prisma.io) with Bun adapter   |
+| Blob Storage| [Vercel Blob](https://vercel.com/docs/storage/blob) |
+| Search      | [Tavily](https://tavily.com) (news & funding)  |
+| LLM         | OpenAI (structured funding data extraction)     |
+| Frontend    | [Next.js](https://nextjs.org) + Tailwind CSS   |
 
-**Components**:
-Scrapers:
-- **LinkedIn Scraper**: Scrapes LinkedIn job postings
-- **Ashby Scraper**: Scrapes Ashby-hosted career pages
-- **Website Scraper**: Generic scraper for company career pages
-- **Tavily News Scraper**: Fetches company news articles via Tavily Search API
-- **Tavily Funding Scraper**: Searches for funding announcements and investment rounds via Tavily Search API, with keyword filtering for funding-related content
-Web Analysis:
-- **Web Traffic Observer**: Fetches web traffic metrics for the company domain
-- **SEO Presence Observer**: Fetches SEO metrics for the company domain
+## Getting Started
 
+### Prerequisites
 
-#### 2.2.2 Data Processing Layer
-**Purpose**: Normalize, deduplicate, and enrich job data
+- [Bun](https://bun.sh) v1.3+
+- PostgreSQL database (Supabase recommended)
+- API keys for Tavily, OpenAI, and Vercel Blob
 
-**Components**: (EASY TO DO, HARD TO DO WELL!)
-- **Data Normalizer**: Standardizes job data across sources
-- **Deduplication Engine**: Identifies and merges duplicate postings
-- **Entity Extractor**: Extracts skills, locations, seniority levels
-- **Change Detector**: Identifies new, updated, or removed postings
+### Install Dependencies
 
-#### 2.2.3 Analytics Engine
-**Purpose**: Generate company health metrics
+```bash
+# From the repo root
+bun install
 
-**Components**:
-- **Metrics Calculator**: Computes health scores and trends
-- **Anomaly Detector**: Identifies unusual hiring patterns
-- **Report Generator**: Creates summary reports and visualizations
+# Backend dependencies
+cd backend && bun install
 
-#### 2.2.4 Data Storage Layer
-**Purpose**: Persist all system data
-
-**Components**:
-- **PostgreSQL**: Primary relational database
-- **Redis**: Caching and job queue
-- **Object Storage (S3/GCS)**: Raw HTML snapshots and backups
-
----
-
-### 3. Data Flow / Implementation (Job Example)
-
-**Approach**: Use a mixture of direct API / web scraping to fetch jobs (depends on what fields the Company has available in registry)
-
-**Challenges & Solutions**:
-- **Detecting diffs**: Not easy due to dynamicness of HTML in web scraping use case
-- **Extracting metadata**: Again, for web scraping case extrapolating on the job posting raw's contents is not trivial / consistent
-
+# Frontend dependencies
+cd frontend && bun install
 ```
-1. Scraping Run Initiated
-   ├─▶ LinkedIn Scraper fetches jobs
-   ├─▶ Ashby Scraper fetches jobs
-   └─▶ Website Scraper fetches jobs
-        │
-        ▼
-2. Raw Data Processing
-   ├─▶ Store raw HTML to object storage
-   ├─▶ Parse HTML/JSON (many ways to do this)
-   └─▶ Extract structured fields
-        │
-        ▼
-3. Normalization & Deduplication (Hard)
-   ├─▶ Standardize field formats
-   ├─▶ Check for existing job by external_id
-   ├─▶ Detect changes via description hash (Not thi simple)
-   └─▶ Update or insert job_postings
-        │
-        ▼
-4. Change Detection
-   ├─▶ Compare with previous snapshot
-   ├─▶ Mark removed jobs (removed_at)
-   ├─▶ Create new job_snapshots
-   └─▶ Update scraping_runs stats
-        │
-        ▼
-5. Metrics Calculation
-   ├─▶ Aggregate job counts
-   ├─▶ Calculate velocity scores
-   ├─▶ Compute diversity metrics
-   └─▶ Generate health_score
-        │
-        ▼
-6. Storage & Alerting
-   ├─▶ Insert company_health_metrics
-   └─▶ Trigger alerts for anomalies
+
+### Environment Variables
+
+Create `backend/.env` with the following keys:
+
+```env
+# Database (Supabase)
+POSTGRES_URL_NON_POOLING=postgres://...
+
+# Tavily (news & funding search)
+TAVILY_API_KEY=tvly-...
+
+# Vercel Blob (raw data storage)
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
+
+# OpenAI (funding data extraction)
+OPENAI_API_KEY=sk-proj-...
 ```
----
 
-## 4. Orchestration & Scheduling
+### Database Setup
 
-### 4.1 Workflow Architecture
+```bash
+cd backend
 
-**Option 1**: Pubsub / Queue (traditional approach)
-**Option 2**: Workflow orchestrator (e.g. Temporal)
+# Generate Prisma client
+bun prisma generate
 
-The job service for example is an ELT (not ETL) pipeline. Ingestors scrape the data (initial MVP calls functions directly) and proceed with the workflow in the same parent function. With a queue / workflow orchestration we would have better persistence, fault tolerance and replayability. The data processoring layer will then pick up the ingested jobs and be responsible for writing to storage the raw contents. The transformation layer will be responsible for parsing and extracting fields into a normalized model that is writing to the data store. There can be many more steps in this process for better deduping, normalization, anomaly detection, alert detectiong, etc.
+# Push schema to database (development)
+bun prisma db push
 
-Pros: Loading job contents to data store immediately after injestion keeps it flexible in case we eventually want to change how we do parsing / extraction (libraries are sprouting like weeds doing html -> markdown better and better).
+# Or run migrations (production)
+bun prisma migrate deploy
+```
 
-Cons: Transparency, telemetry and configurability. A workflow orchestration tool like Temporal would allow us to skip queues / pubsub and call individual activities with built-in retires, backoffs, etc. and provide out-of-the-box visibility into the workflow activity inputs / outputs during execution.
+## Running the API Server
 
+```bash
+cd backend
 
-## 5. Possible Future Enhancements
+# Development (with hot reload)
+bun run dev
 
-**Advanced Analytics**:
-- ML-based health categorization
-- Company growth forecasting
-- Competitor analysis
+# Production
+bun run start
 
-**Additional Data Sources**:
-- Job board integration
-- GitHub code analysis
-- Social media monitoring
-- Sentiment analysis
-- Internal investor data points*
+# API-only server (no job service)
+bun run src/api/index.ts
+```
 
-**Real-time Capabilities**:
-- Push notifications for new events (e.g. fundraise) or anomalies
+The API runs at `http://localhost:3000`. Key endpoints:
 
-**AI Integration**:
-- Natural language querying for company information 
+| Endpoint                          | Description                        |
+|-----------------------------------|------------------------------------|
+| `GET /health`                     | Health check                       |
+| `GET /api/companies`              | List all companies                 |
+| `GET /api/companies/:slug`        | Company details                    |
+| `GET /api/companies/:slug/jobs`   | Job listings for a company         |
+| `GET /api/dashboard/:slug`        | Full dashboard data (metrics, distributions, runs) |
+| `GET /api/news/:slug`             | News articles for a company        |
+| `GET /api/fundraising/:slug`      | Funding rounds & summary           |
 
+## Running the Frontend
+
+```bash
+cd frontend
+bun run dev
+```
+
+Runs at `http://localhost:3001` (or the next available port).
+
+## Running ELT Jobs
+
+Each ELT pipeline follows a 3-layer pattern: **Extract** (scrape) -> **Load** (store raw to blob) -> **Transform** (normalize & write to DB).
+
+All scripts accept an optional company slug argument (defaults to `rain`).
+
+### Ashby Jobs ELT
+
+Scrapes job postings from a company's Ashby job board, stores raw JSON to blob storage, and upserts normalized job data to the database.
+
+```bash
+cd backend
+
+# Default company (rain)
+bun run elt:ashby
+
+# Specific company
+bun run elt:ashby -- acme
+```
+
+### News ELT
+
+Searches for company news articles via the Tavily Search API, stores raw results to blob, and upserts articles to the database. Uses the company's `description` field (if set) to disambiguate search queries.
+
+```bash
+cd backend
+
+bun run elt:news
+
+bun run elt:news -- acme
+```
+
+### Fundraising ELT
+
+Searches for funding announcements via Tavily, stores raw results to blob, extracts structured funding round data using OpenAI, and upserts rounds with deduplication. Uses the company's `description` field (if set) to disambiguate search queries.
+
+```bash
+cd backend
+
+bun run elt:fundraising
+
+bun run elt:fundraising -- acme
+```
+
+## Database Schema
+
+Core models managed via Prisma (`backend/prisma/schema.prisma`):
+
+- **Company** — Tracked companies with metadata, description, and linked board names
+- **JobPosting** — Normalized job listings from any scraper source
+- **NewsArticle** — News articles fetched via Tavily
+- **FundraisingSummary** — Aggregate funding totals per company
+- **FundingRound** — Individual funding rounds with investor data
+- **ScrapingRun** — Audit log of every ELT pipeline execution
+- **CompanyHealthMetric** — Point-in-time health scores and distributions
+
+Migrations live in `backend/prisma/migrations/` and are applied in order.
+
+## Data Storage
+
+- **PostgreSQL** (Supabase) — Primary relational store for all structured data
+- **Vercel Blob** — Raw scraping results (JSON) stored per-run for auditability and reprocessing
