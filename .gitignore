@@ -172,6 +172,6 @@ dist
 
 # AI
 .agents/**/*
-./claude/**/*
+.claude/**/*
 .cursor/**/*
 .windsurf/**/*
