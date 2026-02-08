@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { NewsFeed } from "@/components/news-feed";
+import { NewsFeed } from "@/components/NewsFeed";
 import {
   ApiClient,
   ApiRequestError,
@@ -198,12 +198,10 @@ export default function Home() {
         </header>
 
         <section className="mt-10">
-          <div>
-            <h2 className="font-semibold text-slate-100 text-xl tracking-tight">
-              Jobs
-            </h2>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
+          <h2 className="font-semibold text-slate-100 text-xl tracking-tight">
+            Jobs
+          </h2>
+          <div className="mt-4 grid gap-6 md:grid-cols-3">
             <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
               <p className="text-slate-500 text-xs uppercase tracking-[0.2em]">
                 Active jobs
@@ -238,92 +236,92 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
-            <p className="text-slate-500 text-xs uppercase tracking-[0.2em]">
-              Velocity & diversity
-            </p>
-            <div className="mt-4 space-y-4">
-              <div>
-                <div className="flex items-center justify-between text-slate-400 text-sm">
-                  <span>Job velocity score</span>
-                  <span className="text-slate-200">
-                    {health.jobVelocityScore.toFixed(1)}
-                  </span>
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
+              <p className="text-slate-500 text-xs uppercase tracking-[0.2em]">
+                Velocity & diversity
+              </p>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <div className="flex items-center justify-between text-slate-400 text-sm">
+                    <span>Job velocity score</span>
+                    <span className="text-slate-200">
+                      {health.jobVelocityScore.toFixed(1)}
+                    </span>
+                  </div>
+                  <div className="mt-2 h-2 rounded-full bg-slate-800">
+                    <div
+                      className="h-2 rounded-full bg-emerald-500"
+                      style={{ width: `${health.jobVelocityScore}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="mt-2 h-2 rounded-full bg-slate-800">
-                  <div
-                    className="h-2 rounded-full bg-emerald-500"
-                    style={{ width: `${health.jobVelocityScore}%` }}
-                  />
+                <div>
+                  <div className="flex items-center justify-between text-slate-400 text-sm">
+                    <span>Department diversity</span>
+                    <span className="text-slate-200">
+                      {health.departmentDiversityScore.toFixed(1)}
+                    </span>
+                  </div>
+                  <div className="mt-2 h-2 rounded-full bg-slate-800">
+                    <div
+                      className="h-2 rounded-full bg-indigo-400"
+                      style={{ width: `${health.departmentDiversityScore}%` }}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between text-slate-400 text-sm">
-                  <span>Department diversity</span>
-                  <span className="text-slate-200">
-                    {health.departmentDiversityScore.toFixed(1)}
-                  </span>
-                </div>
-                <div className="mt-2 h-2 rounded-full bg-slate-800">
-                  <div
-                    className="h-2 rounded-full bg-indigo-400"
-                    style={{ width: `${health.departmentDiversityScore}%` }}
-                  />
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between text-slate-400 text-sm">
-                  <span>Location diversity</span>
-                  <span className="text-slate-200">
-                    {health.locationDiversityScore.toFixed(1)}
-                  </span>
-                </div>
-                <div className="mt-2 h-2 rounded-full bg-slate-800">
-                  <div
-                    className="h-2 rounded-full bg-sky-400"
-                    style={{ width: `${health.locationDiversityScore}%` }}
-                  />
+                <div>
+                  <div className="flex items-center justify-between text-slate-400 text-sm">
+                    <span>Location diversity</span>
+                    <span className="text-slate-200">
+                      {health.locationDiversityScore.toFixed(1)}
+                    </span>
+                  </div>
+                  <div className="mt-2 h-2 rounded-full bg-slate-800">
+                    <div
+                      className="h-2 rounded-full bg-sky-400"
+                      style={{ width: `${health.locationDiversityScore}%` }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
-            <p className="text-slate-500 text-xs uppercase tracking-[0.2em]">
-              Signals
-            </p>
-            <ul className="mt-4 space-y-3 text-slate-300 text-sm">
-              {health.growthIndicator === "expanding" && (
-                <li className="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
-                  Hiring is accelerating with {health.jobsAdded30d} new roles in
-                  30 days.
-                </li>
-              )}
-              {health.growthIndicator === "contracting" && (
-                <li className="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
-                  Hiring has slowed with {health.jobsRemoved30d} roles removed
-                  recently.
-                </li>
-              )}
-              {health.growthIndicator === "stable" && (
-                <li className="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
-                  Hiring is stable with balanced job additions and removals.
-                </li>
-              )}
-              {departmentDistribution.length > 0 && (
-                <li className="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
-                  Most hiring in {departmentDistribution[0]?.name} (
-                  {departmentDistribution[0]?.value} roles).
-                </li>
-              )}
-              {health.jobsRemoved30d < health.totalActiveJobs * 0.1 && (
-                <li className="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
-                  Job removals remain below the 10% risk threshold.
-                </li>
-              )}
-            </ul>
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
+              <p className="text-slate-500 text-xs uppercase tracking-[0.2em]">
+                Signals
+              </p>
+              <ul className="mt-4 space-y-3 text-slate-300 text-sm">
+                {health.growthIndicator === "expanding" && (
+                  <li className="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+                    Hiring is accelerating with {health.jobsAdded30d} new roles
+                    in 30 days.
+                  </li>
+                )}
+                {health.growthIndicator === "contracting" && (
+                  <li className="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+                    Hiring has slowed with {health.jobsRemoved30d} roles removed
+                    recently.
+                  </li>
+                )}
+                {health.growthIndicator === "stable" && (
+                  <li className="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+                    Hiring is stable with balanced job additions and removals.
+                  </li>
+                )}
+                {departmentDistribution.length > 0 && (
+                  <li className="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+                    Most hiring in {departmentDistribution[0]?.name} (
+                    {departmentDistribution[0]?.value} roles).
+                  </li>
+                )}
+                {health.jobsRemoved30d < health.totalActiveJobs * 0.1 && (
+                  <li className="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+                    Job removals remain below the 10% risk threshold.
+                  </li>
+                )}
+              </ul>
+            </div>
           </div>
         </section>
 
@@ -413,7 +411,7 @@ export default function Home() {
             <p className="mt-4 text-slate-500 text-sm">No scraping runs yet</p>
           ) : (
             <div className="mt-4 grid gap-3 md:grid-cols-3">
-              {recentRuns.map((run, index) => (
+              {recentRuns.slice(0, 3).map((run, index: number) => (
                 <div
                   className="rounded-lg border border-slate-800 bg-slate-950/40 p-3 text-sm"
                   key={`${run.source}-${run.completedAt}-${index}`}
