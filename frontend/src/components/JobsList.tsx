@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { type Job, ApiClient, ApiRequestError } from "@/lib/api";
+import { useEffect, useMemo, useState } from "react";
+import { ApiClient, ApiRequestError, type Job } from "@/lib/api";
 
 // Re-export Job type for convenience
 export type { Job };
@@ -90,7 +90,9 @@ export function JobsList({ companySlug, apiBaseUrl }: JobsListProps) {
     const grouped: Record<string, Job[]> = {};
     filteredJobs.forEach((job) => {
       const dept = job.department || "Other";
-      if (!grouped[dept]) grouped[dept] = [];
+      if (!grouped[dept]) {
+        grouped[dept] = [];
+      }
       grouped[dept].push(job);
     });
     return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b));
@@ -120,9 +122,9 @@ export function JobsList({ companySlug, apiBaseUrl }: JobsListProps) {
       <div className="rounded-2xl border border-rose-800 bg-slate-900/40 p-8 text-center">
         <p className="text-rose-400">{error}</p>
         <button
-          type="button"
-          onClick={() => window.location.reload()}
           className="mt-4 rounded-lg border border-slate-700 px-4 py-2 text-slate-300 text-sm hover:bg-slate-800"
+          onClick={() => window.location.reload()}
+          type="button"
         >
           Retry
         </button>
@@ -136,17 +138,17 @@ export function JobsList({ companySlug, apiBaseUrl }: JobsListProps) {
       <div className="flex flex-wrap gap-4">
         <div className="min-w-[200px] flex-1">
           <input
-            type="text"
-            placeholder="Search jobs..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
             className="h-10 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search jobs..."
+            type="text"
+            value={searchQuery}
           />
         </div>
         <select
-          value={departmentFilter}
-          onChange={(e) => setDepartmentFilter(e.target.value)}
           className="h-10 rounded-lg border border-slate-700 bg-slate-900 px-3 text-slate-100 focus:border-indigo-500 focus:outline-none"
+          onChange={(e) => setDepartmentFilter(e.target.value)}
+          value={departmentFilter}
         >
           <option value="">All Departments</option>
           {departments.map((dept) => (
@@ -156,9 +158,9 @@ export function JobsList({ companySlug, apiBaseUrl }: JobsListProps) {
           ))}
         </select>
         <select
-          value={seniorityFilter}
-          onChange={(e) => setSeniorityFilter(e.target.value)}
           className="h-10 rounded-lg border border-slate-700 bg-slate-900 px-3 text-slate-100 focus:border-indigo-500 focus:outline-none"
+          onChange={(e) => setSeniorityFilter(e.target.value)}
+          value={seniorityFilter}
         >
           <option value="">All Levels</option>
           {seniorityLevels.map((level) => (
@@ -176,13 +178,13 @@ export function JobsList({ companySlug, apiBaseUrl }: JobsListProps) {
         </p>
         {(searchQuery || departmentFilter || seniorityFilter) && (
           <button
-            type="button"
+            className="text-indigo-400 text-sm hover:text-indigo-300"
             onClick={() => {
               setSearchQuery("");
               setDepartmentFilter("");
               setSeniorityFilter("");
             }}
-            className="text-indigo-400 text-sm hover:text-indigo-300"
+            type="button"
           >
             Clear filters
           </button>
@@ -202,10 +204,10 @@ export function JobsList({ companySlug, apiBaseUrl }: JobsListProps) {
         <div className="space-y-6">
           {jobsByDepartment.map(([department, deptJobs]) => (
             <div
-              key={department}
               className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40"
+              key={department}
             >
-              <div className="border-b border-slate-800 bg-slate-900/60 px-5 py-3">
+              <div className="border-slate-800 border-b bg-slate-900/60 px-5 py-3">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-slate-200">{department}</h3>
                   <span className="rounded-full bg-slate-800 px-2 py-0.5 text-slate-400 text-xs">
@@ -215,7 +217,7 @@ export function JobsList({ companySlug, apiBaseUrl }: JobsListProps) {
               </div>
               <div className="divide-y divide-slate-800">
                 {deptJobs.map((job) => (
-                  <JobCard key={job.id} job={job} />
+                  <JobCard job={job} key={job.id} />
                 ))}
               </div>
             </div>
@@ -276,10 +278,10 @@ function JobCard({ job }: { job: Job }) {
           </div>
         </div>
         <a
-          href={applyLink}
-          target="_blank"
-          rel="noopener noreferrer"
           className="shrink-0 rounded-lg border border-indigo-600 bg-indigo-600/20 px-4 py-2 text-indigo-300 text-sm transition-colors hover:bg-indigo-600/30"
+          href={applyLink}
+          rel="noopener noreferrer"
+          target="_blank"
         >
           Apply
         </a>

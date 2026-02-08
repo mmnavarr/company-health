@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { CompanyDropdown, type Company } from "@/components/CompanyDropdown";
+import { useState } from "react";
+import { type Company, CompanyDropdown } from "@/components/CompanyDropdown";
 import { JobsList } from "@/components/JobsList";
 import { getApiUrl } from "@/lib/api";
 
@@ -19,8 +19,8 @@ export default function JobsPage() {
           <div>
             <div className="flex items-center gap-4">
               <Link
-                href="/"
                 className="text-slate-400 text-sm uppercase tracking-[0.2em] transition-colors hover:text-slate-200"
+                href="/"
               >
                 Company Health
               </Link>
@@ -31,9 +31,9 @@ export default function JobsPage() {
             </p>
           </div>
           <CompanyDropdown
-            selectedSlug={selectedCompany?.slug || null}
-            onSelect={setSelectedCompany}
             apiBaseUrl={API_BASE_URL}
+            onSelect={setSelectedCompany}
+            selectedSlug={selectedCompany?.slug || null}
           />
         </header>
 
@@ -42,7 +42,7 @@ export default function JobsPage() {
           <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900/40 px-6 py-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h2 className="font-semibold text-xl text-slate-100">
+                <h2 className="font-semibold text-slate-100 text-xl">
                   {selectedCompany.name}
                 </h2>
                 <div className="mt-1 flex flex-wrap gap-3 text-slate-400 text-sm">
@@ -76,8 +76,8 @@ export default function JobsPage() {
         {/* Jobs list */}
         <section className="mt-8">
           <JobsList
-            companySlug={selectedCompany?.slug || null}
             apiBaseUrl={API_BASE_URL}
+            companySlug={selectedCompany?.slug || null}
           />
         </section>
       </div>

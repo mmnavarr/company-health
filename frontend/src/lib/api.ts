@@ -98,6 +98,23 @@ export interface DashboardData {
 }
 
 // ============================================================================
+// News Types
+// ============================================================================
+
+export interface NewsArticle {
+  id: string;
+  title: string;
+  snippet: string | null;
+  content: string | null;
+  externalUrl: string;
+  source: string;
+  publishedAt: string | null;
+  sentiment: string | null;
+  rawScore: number | null;
+  firstSeenAt: string;
+}
+
+// ============================================================================
 // API Client
 // ============================================================================
 
@@ -108,7 +125,7 @@ export function getApiUrl(): string {
 }
 
 export class ApiClient {
-  private baseUrl: string;
+  private readonly baseUrl: string;
 
   constructor(baseUrl?: string) {
     this.baseUrl = baseUrl || getApiUrl();
@@ -135,15 +152,17 @@ export class ApiClient {
   }
 
   // Companies
-  async getCompanies(): Promise<Company[]> {
+  getCompanies(): Promise<Company[]> {
     return this.fetch<Company[]>("/api/companies");
   }
 
-  async getCompany(slug: string): Promise<CompanyDetail> {
-    return this.fetch<CompanyDetail>(`/api/companies/${encodeURIComponent(slug)}`);
+  getCompany(slug: string): Promise<CompanyDetail> {
+    return this.fetch<CompanyDetail>(
+      `/api/companies/${encodeURIComponent(slug)}`
+    );
   }
 
-  async getCompanyJobs(
+  getCompanyJobs(
     slug: string,
     filters?: {
       department?: string;
@@ -153,10 +172,18 @@ export class ApiClient {
     }
   ): Promise<Job[]> {
     const params = new URLSearchParams();
-    if (filters?.department) params.set("department", filters.department);
-    if (filters?.seniority) params.set("seniority", filters.seniority);
-    if (filters?.remote) params.set("remote", filters.remote);
-    if (filters?.search) params.set("search", filters.search);
+    if (filters?.department) {
+      params.set("department", filters.department);
+    }
+    if (filters?.seniority) {
+      params.set("seniority", filters.seniority);
+    }
+    if (filters?.remote) {
+      params.set("remote", filters.remote);
+    }
+    if (filters?.search) {
+      params.set("search", filters.search);
+    }
 
     const queryString = params.toString();
     const path = `/api/companies/${encodeURIComponent(slug)}/jobs${queryString ? `?${queryString}` : ""}`;
@@ -164,15 +191,21 @@ export class ApiClient {
   }
 
   // Jobs
-  async getJobs(filters?: {
+  getJobs(filters?: {
     companyId?: string;
     department?: string;
     limit?: number;
   }): Promise<Job[]> {
     const params = new URLSearchParams();
-    if (filters?.companyId) params.set("companyId", filters.companyId);
-    if (filters?.department) params.set("department", filters.department);
-    if (filters?.limit) params.set("limit", String(filters.limit));
+    if (filters?.companyId) {
+      params.set("companyId", filters.companyId);
+    }
+    if (filters?.department) {
+      params.set("department", filters.department);
+    }
+    if (filters?.limit) {
+      params.set("limit", String(filters.limit));
+    }
 
     const queryString = params.toString();
     const path = `/api/jobs${queryString ? `?${queryString}` : ""}`;
@@ -180,18 +213,38 @@ export class ApiClient {
   }
 
   // Dashboard
-  async getDashboard(slug: string): Promise<DashboardData> {
-    return this.fetch<DashboardData>(`/api/dashboard/${encodeURIComponent(slug)}`);
+  getDashboard(slug: string): Promise<DashboardData> {
+    return this.fetch<DashboardData>(
+      `/api/dashboard/${encodeURIComponent(slug)}`
+    );
+  }
+
+  // News
+  getCompanyNews(
+    slug: string,
+    options?: { limit?: number; offset?: number }
+  ): Promise<NewsArticle[]> {
+    const params = new URLSearchParams();
+    if (options?.limit) {
+      params.set("limit", String(options.limit));
+    }
+    if (options?.offset) {
+      params.set("offset", String(options.offset));
+    }
+
+    const queryString = params.toString();
+    const path = `/api/news/${encodeURIComponent(slug)}${queryString ? `?${queryString}` : ""}`;
+    return this.fetch<NewsArticle[]>(path);
   }
 }
 
 export class ApiRequestError extends Error {
-  constructor(
-    message: string,
-    public status: number
-  ) {
+  readonly status: number;
+
+  constructor(message: string, status: number) {
     super(message);
     this.name = "ApiRequestError";
+    this.status = status;
   }
 }
 

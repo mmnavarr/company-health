@@ -1,7 +1,13 @@
 /** Fields derived by normalization, to be written to job_postings */
 
 export type RemoteType = "Remote" | "Hybrid" | "Onsite";
-export type SeniorityLevel = "Intern" | "Entry" | "Mid" | "Senior" | "Staff" | "Executive";
+export type SeniorityLevel =
+  | "Intern"
+  | "Entry"
+  | "Mid"
+  | "Senior"
+  | "Staff"
+  | "Executive";
 
 export interface NormalizedJobFields {
   remoteType: RemoteType;

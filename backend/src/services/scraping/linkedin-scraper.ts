@@ -14,9 +14,8 @@ export interface LinkedInJob {
 }
 
 export class LinkedInScrapingService implements ScrapingService {
-
   // biome-ignore lint/suspicious/useAwait: Unimplemented
-    async scrape<LinkedInJob>(_companyName: string): Promise<LinkedInJob> {
+  async scrape<LinkedInJob>(_companyName: string): Promise<LinkedInJob> {
     return [] as LinkedInJob;
   }
 }

@@ -13,7 +13,10 @@ export class HealthMetricsService {
     this.prisma = prisma;
   }
 
-  async calculateHealthMetrics(companyId: string, metricDate: string): Promise<CompanyHealthMetrics> {
+  async calculateHealthMetrics(
+    companyId: string,
+    metricDate: string
+  ): Promise<CompanyHealthMetrics> {
     const company = await this.prisma.company.findUnique({
       where: { id: companyId },
     });
@@ -50,8 +53,15 @@ export class HealthMetricsService {
     const locationDiversityScore = await this.prisma.jobPosting.count({
       where: { companyId, removedAt: null, location: { not: null } },
     });
-    const healthScore = (jobVelocityScore + departmentDiversityScore + locationDiversityScore) / 3;
-    const growthIndicator = jobVelocityScore > 0 ? "expanding" : jobVelocityScore < 0 ? "contracting" : "stable";
+    const healthScore =
+      (jobVelocityScore + departmentDiversityScore + locationDiversityScore) /
+      3;
+    const growthIndicator =
+      jobVelocityScore > 0
+        ? "expanding"
+        : jobVelocityScore < 0
+          ? "contracting"
+          : "stable";
 
     return {
       id: company.id,

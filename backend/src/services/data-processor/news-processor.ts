@@ -3,10 +3,10 @@
  * Layer 2 of the ELT pipeline: store raw to blob, write to DB.
  */
 
-import { hashContent } from "@/utils";
 import { prisma } from "../../lib/prisma";
 import type { BlobStorage } from "../../lib/storage";
 import type { RawNewsData } from "../../types";
+import { hashContent } from "../../utils";
 
 export class NewsProcessingService {
   private readonly storage: BlobStorage;
@@ -34,7 +34,7 @@ export class NewsProcessingService {
   async syncNewsArticles(
     companyId: string,
     articles: RawNewsData[]
-  ): Promise<{ articlesNew: number; articlesUpdated: number; }> {
+  ): Promise<{ articlesNew: number; articlesUpdated: number }> {
     const now = new Date();
     let articlesNew = 0;
     let articlesUpdated = 0;

@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { NewsFeed } from "@/components/news-feed";
 import {
   ApiClient,
   ApiRequestError,
-  getApiUrl,
-  type DashboardData,
   type Company,
+  type DashboardData,
+  getApiUrl,
 } from "@/lib/api";
 
 const API_BASE_URL = getApiUrl();
@@ -33,7 +34,9 @@ export default function Home() {
         }
       } catch (err) {
         setError(
-          err instanceof ApiRequestError ? err.message : "Failed to load companies"
+          err instanceof ApiRequestError
+            ? err.message
+            : "Failed to load companies"
         );
       }
     }
@@ -55,7 +58,9 @@ export default function Home() {
         setDashboard(data);
       } catch (err) {
         setError(
-          err instanceof ApiRequestError ? err.message : "Failed to load dashboard"
+          err instanceof ApiRequestError
+            ? err.message
+            : "Failed to load dashboard"
         );
         setDashboard(null);
       } finally {
@@ -69,11 +74,11 @@ export default function Home() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-100">
         <div className="text-center">
-          <p className="text-rose-400 text-lg">{error}</p>
+          <p className="text-lg text-rose-400">{error}</p>
           <button
-            type="button"
-            onClick={() => window.location.reload()}
             className="mt-4 rounded-lg border border-slate-700 px-4 py-2 text-slate-300 hover:bg-slate-800"
+            onClick={() => window.location.reload()}
+            type="button"
           >
             Retry
           </button>
@@ -93,8 +98,13 @@ export default function Home() {
     );
   }
 
-  const { company, health, departmentDistribution, seniorityDistribution, recentRuns } =
-    dashboard;
+  const {
+    company,
+    health,
+    departmentDistribution,
+    seniorityDistribution,
+    recentRuns,
+  } = dashboard;
 
   const growthBadge =
     health.growthIndicator === "expanding"
@@ -104,8 +114,14 @@ export default function Home() {
         : "bg-slate-100 text-slate-700";
 
   // Calculate max values for progress bars
-  const maxDeptValue = Math.max(...departmentDistribution.map((d) => d.value), 1);
-  const maxSeniorityValue = Math.max(...seniorityDistribution.map((s) => s.value), 1);
+  const maxDeptValue = Math.max(
+    ...departmentDistribution.map((d) => d.value),
+    1
+  );
+  const maxSeniorityValue = Math.max(
+    ...seniorityDistribution.map((s) => s.value),
+    1
+  );
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
@@ -117,8 +133,8 @@ export default function Home() {
                 Company Health
               </p>
               <Link
-                href="/jobs"
                 className="rounded-lg border border-indigo-600 bg-indigo-600/20 px-3 py-1 text-indigo-300 text-sm transition-colors hover:bg-indigo-600/30"
+                href="/jobs"
               >
                 View Jobs
               </Link>
@@ -127,9 +143,9 @@ export default function Home() {
               <h1 className="font-semibold text-4xl">{company.name}</h1>
               {companies.length > 1 && (
                 <select
-                  value={selectedSlug || ""}
-                  onChange={(e) => setSelectedSlug(e.target.value)}
                   className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1 text-slate-300 text-sm focus:border-indigo-500 focus:outline-none"
+                  onChange={(e) => setSelectedSlug(e.target.value)}
+                  value={selectedSlug || ""}
                 >
                   {companies.map((c) => (
                     <option key={c.id} value={c.slug}>
@@ -181,36 +197,45 @@ export default function Home() {
           </div>
         </header>
 
-        <section className="mt-10 grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
-            <p className="text-slate-500 text-xs uppercase tracking-[0.2em]">
-              Active jobs
-            </p>
-            <p className="mt-3 font-semibold text-3xl">{health.totalActiveJobs}</p>
-            <div className="mt-4 grid grid-cols-2 gap-3 text-slate-400 text-sm">
-              <div>
-                <p className="text-slate-500 text-xs">Added (7d)</p>
-                <p className="text-base text-emerald-400">
-                  {health.jobsAdded7d}
-                </p>
-              </div>
-              <div>
-                <p className="text-slate-500 text-xs">Removed (7d)</p>
-                <p className="text-base text-rose-400">
-                  {health.jobsRemoved7d}
-                </p>
-              </div>
-              <div>
-                <p className="text-slate-500 text-xs">Added (30d)</p>
-                <p className="text-base text-emerald-400">
-                  {health.jobsAdded30d}
-                </p>
-              </div>
-              <div>
-                <p className="text-slate-500 text-xs">Removed (30d)</p>
-                <p className="text-base text-rose-400">
-                  {health.jobsRemoved30d}
-                </p>
+        <section className="mt-10">
+          <div>
+            <h2 className="font-semibold text-slate-100 text-xl tracking-tight">
+              Jobs
+            </h2>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
+              <p className="text-slate-500 text-xs uppercase tracking-[0.2em]">
+                Active jobs
+              </p>
+              <p className="mt-3 font-semibold text-3xl">
+                {health.totalActiveJobs}
+              </p>
+              <div className="mt-4 grid grid-cols-2 gap-3 text-slate-400 text-sm">
+                <div>
+                  <p className="text-slate-500 text-xs">Added (7d)</p>
+                  <p className="text-base text-emerald-400">
+                    {health.jobsAdded7d}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-xs">Removed (7d)</p>
+                  <p className="text-base text-rose-400">
+                    {health.jobsRemoved7d}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-xs">Added (30d)</p>
+                  <p className="text-base text-emerald-400">
+                    {health.jobsAdded30d}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-xs">Removed (30d)</p>
+                  <p className="text-base text-rose-400">
+                    {health.jobsRemoved30d}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -302,7 +327,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mt-10 grid gap-6 lg:grid-cols-3">
+        <section className="mt-4 grid gap-6 lg:grid-cols-3">
           <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 lg:col-span-2">
             <div className="flex items-center justify-between">
               <p className="font-semibold text-slate-200 text-sm">
@@ -313,7 +338,9 @@ export default function Home() {
               </span>
             </div>
             {departmentDistribution.length === 0 ? (
-              <p className="mt-4 text-slate-500 text-sm">No department data available</p>
+              <p className="mt-4 text-slate-500 text-sm">
+                No department data available
+              </p>
             ) : (
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {departmentDistribution.map((item) => (
@@ -340,9 +367,13 @@ export default function Home() {
           </div>
 
           <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
-            <p className="font-semibold text-slate-200 text-sm">Seniority mix</p>
+            <p className="font-semibold text-slate-200 text-sm">
+              Seniority mix
+            </p>
             {seniorityDistribution.length === 0 ? (
-              <p className="mt-4 text-slate-500 text-sm">No seniority data available</p>
+              <p className="mt-4 text-slate-500 text-sm">
+                No seniority data available
+              </p>
             ) : (
               <div className="mt-4 space-y-3">
                 {seniorityDistribution.map((item) => (
@@ -388,7 +419,9 @@ export default function Home() {
                   key={`${run.source}-${run.completedAt}-${index}`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-400 uppercase">{run.source}</span>
+                    <span className="text-slate-400 uppercase">
+                      {run.source}
+                    </span>
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs ${
                         run.status === "completed"
@@ -414,6 +447,10 @@ export default function Home() {
               ))}
             </div>
           )}
+        </section>
+
+        <section className="mt-10">
+          <NewsFeed companySlug={selectedSlug!} limit={5} />
         </section>
       </div>
     </div>

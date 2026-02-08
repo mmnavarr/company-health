@@ -3,6 +3,8 @@
  * Run: bun run scripts/test-ashby.ts
  */
 
+declare const Bun: typeof import("bun");
+
 import { AshbyScraper } from "../src/scraping";
 import type { AshbyJobsResponse } from "../src/scraping/ashby-scraper";
 

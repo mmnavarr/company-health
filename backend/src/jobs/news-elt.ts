@@ -5,9 +5,9 @@
  * 3. Transformation: Upsert news articles to DB with content hash change detection
  */
 
-import { NewsProcessingService } from "../services/data-processor";
 import { prisma } from "../lib/prisma";
 import { VercelBlobStorage } from "../lib/storage";
+import { NewsProcessingService } from "../services/data-processor";
 import {
   type TavilyNewsResponse,
   TavilyNewsScrapingService,
@@ -29,7 +29,9 @@ export class NewsELTJob extends Job {
   constructor() {
     super("news-elt");
 
-    this.tavilyScrapingService = new TavilyNewsScrapingService(process.env.TAVILY_API_KEY ?? "");
+    this.tavilyScrapingService = new TavilyNewsScrapingService(
+      process.env.TAVILY_API_KEY ?? ""
+    );
     this.newsProcessor = new NewsProcessingService(new VercelBlobStorage());
   }
 
@@ -56,7 +58,8 @@ export class NewsELTJob extends Job {
     }
 
     // --- Layer 1: Extract (Scraping) ---
-    const response = await this.tavilyScrapingService.scrape<TavilyNewsResponse>(company.name);
+    const response =
+      await this.tavilyScrapingService.scrape<TavilyNewsResponse>(company.name);
     const results = response.results;
     pipelineResult.articlesFound = results.length;
 
@@ -79,7 +82,10 @@ export class NewsELTJob extends Job {
     pipelineResult.rawPath = await this.newsProcessor.storeBlob(articles);
 
     // --- Layer 3: Transform & persist to DB ---
-    const dbResult = await this.newsProcessor.syncNewsArticles(company.id, articles);
+    const dbResult = await this.newsProcessor.syncNewsArticles(
+      company.id,
+      articles
+    );
     pipelineResult.articlesNew = dbResult.articlesNew;
     pipelineResult.articlesUpdated = dbResult.articlesUpdated;
 

@@ -5,9 +5,9 @@
  * 3. Transformation: Normalize, deduplicate by external_id, detect changes via description hash, update/insert
  */
 
-import { JobProcessingService } from "../services/data-processor";
 import { prisma } from "../lib/prisma";
 import { VercelBlobStorage } from "../lib/storage";
+import { JobProcessingService } from "../services/data-processor";
 import {
   type AshbyJobsResponse,
   AshbyScrapingService,

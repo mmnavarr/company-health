@@ -74,7 +74,8 @@ export const jobsRoutes = new Elysia({ prefix: "/api/jobs" })
       response: "job.list",
       detail: {
         summary: "List all jobs",
-        description: "Returns jobs across all companies with optional filtering",
+        description:
+          "Returns jobs across all companies with optional filtering",
         tags: ["Jobs"],
       },
     }

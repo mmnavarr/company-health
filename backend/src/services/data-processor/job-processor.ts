@@ -3,15 +3,15 @@
  * Layer 2 of the ELT pipeline: store raw to blob, write to DB.
  */
 
+import type { JobPosting } from "backend/generated/prisma/client";
+import type { JobPostingCreateManyInput } from "backend/generated/prisma/models/JobPosting";
+import { type ILogObj, Logger } from "tslog";
 import { hashContent, slugify } from "@/utils";
 import { prisma } from "../../lib/prisma";
 import type { BlobStorage } from "../../lib/storage";
-import type { AshbyJob } from "../scraping/ashby-scraper";
 import type { JobSource } from "../../types";
+import type { AshbyJob } from "../scraping/ashby-scraper";
 import { normalizeJob } from "./utils";
-import { type ILogObj, Logger } from "tslog";
-import type { JobPosting } from "backend/generated/prisma/client";
-import type { JobPostingCreateManyInput } from "backend/generated/prisma/models/JobPosting";
 
 export class JobProcessingService {
   private readonly log: Logger<ILogObj>;

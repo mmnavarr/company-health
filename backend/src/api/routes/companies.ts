@@ -178,7 +178,9 @@ export const companiesRoutes = new Elysia({ prefix: "/api/companies" })
           ...(search && {
             OR: [
               { title: { contains: search, mode: "insensitive" as const } },
-              { department: { contains: search, mode: "insensitive" as const } },
+              {
+                department: { contains: search, mode: "insensitive" as const },
+              },
               { location: { contains: search, mode: "insensitive" as const } },
             ],
           }),

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { type Company, ApiClient, ApiRequestError } from "@/lib/api";
+import { ApiClient, ApiRequestError, type Company } from "@/lib/api";
 
 // Re-export Company type for convenience
 export type { Company };
@@ -37,13 +37,17 @@ export function CompanyDropdown({
           onSelect(data[0]);
         } else if (selectedSlug) {
           const selected = data.find((c) => c.slug === selectedSlug);
-          if (selected) onSelect(selected);
+          if (selected) {
+            onSelect(selected);
+          }
         }
       } catch (err) {
         if (err instanceof ApiRequestError) {
           setError(err.message);
         } else {
-          setError(err instanceof Error ? err.message : "Failed to load companies");
+          setError(
+            err instanceof Error ? err.message : "Failed to load companies"
+          );
         }
       } finally {
         setIsLoading(false);
@@ -89,24 +93,26 @@ export function CompanyDropdown({
   return (
     <div className="relative w-64">
       <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
         className="flex h-10 w-full items-center justify-between rounded-lg border border-slate-700 bg-slate-900 px-3 text-left transition-colors hover:border-slate-600"
+        onClick={() => setIsOpen(!isOpen)}
+        type="button"
       >
         <span className="truncate text-slate-100">
           {selectedCompany?.name || "Select a company"}
         </span>
         <svg
+          aria-label="Toggle dropdown"
           className={`h-4 w-4 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
           fill="none"
-          viewBox="0 0 24 24"
+          role="img"
           stroke="currentColor"
+          viewBox="0 0 24 24"
         >
           <path
+            d="M19 9l-7 7-7-7"
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M19 9l-7 7-7-7"
           />
         </svg>
       </button>
@@ -114,22 +120,24 @@ export function CompanyDropdown({
       {isOpen && (
         <>
           {/* Backdrop to close dropdown when clicking outside */}
-          <div
-            className="fixed inset-0 z-40"
+          <button
+            aria-label="Close dropdown"
+            className="fixed inset-0 z-40 cursor-default bg-transparent"
             onClick={() => setIsOpen(false)}
+            type="button"
           />
           <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-slate-700 bg-slate-900 shadow-lg">
             {companies.map((company) => (
               <button
+                className={`flex w-full items-center justify-between px-3 py-2 text-left transition-colors hover:bg-slate-800 ${
+                  company.slug === selectedSlug ? "bg-slate-800" : ""
+                }`}
                 key={company.id}
-                type="button"
                 onClick={() => {
                   onSelect(company);
                   setIsOpen(false);
                 }}
-                className={`flex w-full items-center justify-between px-3 py-2 text-left transition-colors hover:bg-slate-800 ${
-                  company.slug === selectedSlug ? "bg-slate-800" : ""
-                }`}
+                type="button"
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-slate-100">{company.name}</p>

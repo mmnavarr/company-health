@@ -135,9 +135,9 @@ export const dashboardRoutes = new Elysia({ prefix: "/api/dashboard" })
       });
 
       const departmentDistribution = departmentStats
-        .filter((d) => d.department)
+        .filter((d): d is typeof d & { department: string } => !!d.department)
         .map((d) => ({
-          name: d.department!,
+          name: d.department,
           value: d._count.id,
         }));
 
@@ -163,9 +163,11 @@ export const dashboardRoutes = new Elysia({ prefix: "/api/dashboard" })
       };
 
       const seniorityDistribution = seniorityStats
-        .filter((s) => s.seniorityLevel)
+        .filter(
+          (s): s is typeof s & { seniorityLevel: string } => !!s.seniorityLevel
+        )
         .map((s) => ({
-          name: seniorityMap[s.seniorityLevel!] || s.seniorityLevel!,
+          name: seniorityMap[s.seniorityLevel] || s.seniorityLevel,
           value: s._count.id,
         }));
 
@@ -200,8 +202,11 @@ export const dashboardRoutes = new Elysia({ prefix: "/api/dashboard" })
 
       // Determine growth indicator
       let growthIndicator = "stable";
-      if (netJobChange > 5) growthIndicator = "expanding";
-      else if (netJobChange < -5) growthIndicator = "contracting";
+      if (netJobChange > 5) {
+        growthIndicator = "expanding";
+      } else if (netJobChange < -5) {
+        growthIndicator = "contracting";
+      }
 
       // Calculate final scores - use stored metrics if available, otherwise calculate
       const finalJobVelocityScore =

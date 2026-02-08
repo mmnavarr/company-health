@@ -9,13 +9,13 @@ interface AshbyAddress {
   addressLocality?: string;
   addressRegion?: string;
   addressCountry?: string;
-};
+}
 
 /** Secondary location for a job */
 interface AshbySecondaryLocation {
   location: string;
   address?: AshbyAddress;
-};
+}
 
 /** Compensation component within a tier */
 interface AshbyCompensationComponent {
@@ -26,7 +26,7 @@ interface AshbyCompensationComponent {
   currencyCode: string | null;
   minValue: number | null;
   maxValue: number | null;
-};
+}
 
 /** Compensation tier (e.g. "$75K – $100K • Offers Equity • Offers Bonus") */
 interface AshbyCompensationTier {
@@ -35,7 +35,7 @@ interface AshbyCompensationTier {
   title: string | null;
   additionalInformation: string | null;
   components: AshbyCompensationComponent[];
-};
+}
 
 /** Summary component (flattened view of compensation) */
 interface AshbySummaryComponent {
@@ -44,7 +44,7 @@ interface AshbySummaryComponent {
   currencyCode: string | null;
   minValue: number | null;
   maxValue: number | null;
-};
+}
 
 /** Compensation info (when includeCompensation=true) */
 interface AshbyCompensation {
@@ -52,7 +52,7 @@ interface AshbyCompensation {
   scrapeableCompensationSalarySummary?: string | null;
   compensationTiers?: AshbyCompensationTier[];
   summaryComponents?: AshbySummaryComponent[];
-};
+}
 
 /** Job object from Ashby posting-api job-board endpoint */
 export interface AshbyJob {
@@ -80,12 +80,12 @@ export interface AshbyJob {
   descriptionHtml?: string;
   descriptionPlain?: string;
   compensation?: AshbyCompensation;
-};
+}
 
 export interface AshbyJobsResponse {
   apiVersion?: string;
   jobs?: AshbyJob[];
-};
+}
 
 export class AshbyScrapingService implements ScrapingService {
   static getJobsApiUrl(jobBoardName: string): string {
