@@ -12,6 +12,22 @@ import { dashboardRoutes } from "./routes/dashboard";
 
 export const app = new Elysia({ name: "job-service" })
   .use(cors())
+  .onError(({ code, error, set }) => {
+    console.error(`[API Error] ${code}:`, error);
+    
+    if (code === "VALIDATION") {
+      set.status = 400;
+      return { error: "Validation error: " + error.message };
+    }
+    
+    if (code === "NOT_FOUND") {
+      set.status = 404;
+      return { error: "Not found" };
+    }
+    
+    set.status = 500;
+    return { error: "Internal server error. Please try again later." };
+  })
   .get("/health", () => ({ status: "ok", service: "job-service" }))
   .use(companiesRoutes)
   .use(jobsRoutes)
